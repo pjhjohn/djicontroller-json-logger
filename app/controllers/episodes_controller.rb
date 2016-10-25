@@ -1,4 +1,4 @@
-class EpisodeController < ApplicationController
+class EpisodesController < ApplicationController
   def index
     @episodes = Episode.all
   
