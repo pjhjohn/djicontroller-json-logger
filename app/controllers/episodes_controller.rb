@@ -4,7 +4,7 @@ class EpisodesController < ApplicationController
   
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @episodess }
+      format.json { render json: @episodes }
     end
   end
   
