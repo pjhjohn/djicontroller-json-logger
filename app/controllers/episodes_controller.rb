@@ -18,8 +18,14 @@ class EpisodesController < ApplicationController
   end
   
   def create
-    @episode = Episode.new(episode_params)
-  
+    @episode = Episode.new
+    @episode.name = params[:name]
+    @episode.timestep = params[:timestep] unless params[:timestep].nil?
+    begin
+      @episode.control_points = JSON.parse(params[:control_points])
+    rescue JSON::ParserError
+    end
+
     respond_to do |format|
       if @episode.save
         flash[:notice] = 'Episode was successfully created.'

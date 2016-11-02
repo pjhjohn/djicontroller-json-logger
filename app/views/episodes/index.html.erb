@@ -1,3 +1,33 @@
-<div>
-    <%= @episodes.inspect %>
+<div class="columns">
+  <div class="column col-8" style="padding:15px;">
+    <h3>Episodes</h3>
+  </div>
+  <div class="column col-4" style="margin-top:30px;padding:15px;">
+    <a href="/episodes/new" class="btn btn-block">New Episode</a>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+  <% if @episodes.empty? %>
+    <h1>No Episodes</h1>
+  <% else %>
+    <% @episodes.each do |episode| %>
+      <div class="column col-3" style="padding:15px;">
+        <a href="/episodes/<%= episode.id %>" style="text-decoration:none;">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><%= episode.name %></h4>
+          </div>
+          <div class="card-body">
+            <div>Timestep: <%= episode.timestep %></div>
+            <div>Control Points: <%= JSON.parse(episode.control_points).length %></div>
+            <div>States: <%= JSON.parse(episode.states).length %></div>
+            <div>State diffs: <%= JSON.parse(episode.diff_states).length %></div>
+            <div>Commands: <%= JSON.parse(episode.commands).length %></div>
+          </div>
+        </div>
+        </a>
+      </div>
+    <%end %>
+  <%end %>
 </div>

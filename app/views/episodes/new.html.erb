@@ -1,0 +1,37 @@
+<div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <h3>
+      <span class="btn btn-link zmdi zmdi-chevron-left" onclick="history.back(-1)" style="padding:0px;"></span>
+      New Episode
+    </h3>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <form action="/episodes" method="POST">
+      <!-- name:string -->
+      <div class="form-group">
+        <label class="form-label" for="name" style="font-weight:bold;padding:5px 0px;">Name</label>
+        <input class="form-input" type="text" id="name" name="name"/>
+      </div>
+      
+      <!-- timestep:integer -->
+      <div class="form-group">
+        <label class="form-label" for="timestep" style="font-weight:bold;padding:5px 0px;">Timestep in milliseconds >= 10ms</label>
+        <input class="form-input" type="number" id="timestep" name="timestep" placeholder="200 by default" value="200" disabled/>
+      </div>
+      
+      <!-- control_points:JSON -->
+      <div class="form-group">
+        <label class="form-label" for="control_points" style="font-weight:bold;padding:5px 0px;">Control Points in JSON</label>
+        <textarea class="form-input" id="control_points" name="control_points" rows="10"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <button class="btn btn-primary" type="submit">Submit</button>
+        <button class="btn btn-link" type="reset">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -5,10 +5,14 @@
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
+  <!-- Spectre CSS -->
+  <link rel="stylesheet" href="https://cdn.bootcss.com/spectre.css/0.1.27/spectre.min.css">
+  <!-- Material Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
 </head>
 <body>
-
-<%= yield %>
-
+  <div class="container grid-960">
+    <%= yield %>
+  </div>
 </body>
 </html>
