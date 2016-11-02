@@ -15,9 +15,13 @@ ActiveRecord::Schema.define(version: 20161020122050) do
 
   create_table "episodes", force: :cascade do |t|
     t.string   "name"
-    t.string   "commands"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "timestep",       default: 200
+    t.string   "control_points", default: "[]"
+    t.string   "states",         default: "[]"
+    t.string   "diff_states",    default: "[]"
+    t.string   "commands",       default: "[]"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
   end
 
 end
