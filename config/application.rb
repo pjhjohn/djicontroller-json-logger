@@ -22,5 +22,8 @@ module Workspace
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+
+    # Auto load lib modules (reference : http://stackoverflow.com/questions/19098663/auto-loading-lib-files-in-rails-4)
+    config.autoload_paths << Rails.root.join('lib')
   end
 end
