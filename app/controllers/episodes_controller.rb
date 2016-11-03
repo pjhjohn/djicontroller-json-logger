@@ -78,22 +78,29 @@ class EpisodesController < ApplicationController
     end
   end
 
-  def bezier
+  def update_states
     @episode = Episode.find(params[:id])
-    bez = Bezier::Curve.new(
-      Bezier::ControlPoint.new(0, 0, 0, 0),
-      Bezier::ControlPoint.new(2, 2, 0, 0),
-      Bezier::ControlPoint.new(2,-2, 0, 0),
-      Bezier::ControlPoint.new(4, 0, 0, 0),
-      Bezier::ControlPoint.new(6, 2, 0, 0),
-      Bezier::ControlPoint.new(6,-2, 0, 0),
-      Bezier::ControlPoint.new(8, 0, 0, 0)
-    )
-    render :json => {
-      :x => bez.point_on_curve(0.5).x,
-      :y => bez.point_on_curve(0.5).y,
-      :z => bez.point_on_curve(0.5).z,
-      :r => bez.point_on_curve(0.5).r,
-    }
+    control_points = JSON.parse(@episode.control_points)
+    bez = Bezier::Curve.new(*control_points.map{ |point| [point["x"], point["y"], point["z"], point["r"]]})
+    max_time = control_points.last["t"]
+
+    states = []
+    time = 0
+    while time <= max_time do
+      point = bez.point_on_curve(time / max_time)
+      states.push({
+        :t => time,
+        :x => point.x,
+        :y => point.y,
+        :z => point.z,
+        :r => point.r,
+      })
+      time += @episode.timestep
+    end
+
+    @episode.states = states.to_json
+    @episode.save
+
+    redirect_to(@episode)
   end
 end

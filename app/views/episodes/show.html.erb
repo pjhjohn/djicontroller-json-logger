@@ -17,12 +17,19 @@
 </div>
 <div class="divider"></div>
 <div class="columns">
-  <div class="column col-12" style="padding:15px;">
+  <div class="column col-8" style="padding:15px;padding-bottom:0px;">
     <h4>Episode.control_points</h4>
+  </div>
+  <div class="column col-4" style="margin-top:20px;padding:15px;">
+    <a href="/episodes/<%=@episode.id%>/update_states" class="btn btn-block">Update States with Bezier Interpolation</a>
+  </div>
+</div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;padding-top:0px;">
     <span>Control Points of world reference trajectory in JSON. This field should be strictly formatted as JSON</span>
     <h6>Chart</h6>
     <div style="padding:10px;">
-      <%= render partial: "chart", locals: {data: @episode.control_points, keys: ["x", "y", "z", "r"]} %>
+      <%= render partial: "chart", locals: { title: "control_points", data: @episode.control_points, keys: ["x", "y", "z", "r"] } %>
     </div>
     <h6>Raw Data</h6>
     <pre class="code lang-js"><%= JSON.pretty_generate(JSON.parse(@episode.control_points)) -%></pre>
@@ -36,7 +43,7 @@
     <span style="font-weight:bold;">Rotation in degree, divided by 10 for representation</span>
     <h6>Chart</h6>
     <div style="padding:10px;">
-      <h2>Not implemented</h2>
+      <%= render partial: "chart", locals: { title: "states", data: @episode.states, keys: ["x", "y", "z", "r"] } %>
     </div>
     <h6>Raw Data</h6>
     <pre class="code lang-js"><%= JSON.pretty_generate(JSON.parse(@episode.states)) -%></pre>
