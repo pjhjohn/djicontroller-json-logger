@@ -50,6 +50,11 @@ class EpisodesController < ApplicationController
   
   def update
     @episode = Episode.find(params[:id])
+
+    episode_params = Hash.new
+    episode_params[:name] = params[:name] unless params[:name].nil?
+    episode_params[:timestep] = params[:timestep] unless params[:timestep].nil?
+    episode_params[:control_points] = JSON.parse(params[:control_points]).to_json # Checks JSON validity during conversion
   
     respond_to do |format|
       if @episode.update(episode_params)

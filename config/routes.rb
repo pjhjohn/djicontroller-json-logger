@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   root :to => 'episodes#index'
 
+  post '/episodes/:id' => 'episodes#update'
+
   resources :episodes, constraints: { id: /[0-9]+/ }
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
