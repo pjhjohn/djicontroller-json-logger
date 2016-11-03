@@ -22,9 +22,7 @@
       <%= render partial: "chart"%>
     </div>
     <h6>Raw Data</h6>
-    <pre class="code lang-js" style="padding-left:10px;">
-      <%= JSON.parse(@episode.control_points) -%>
-    </pre>
+    <pre class="code lang-js"><%= JSON.pretty_generate(JSON.parse(@episode.control_points)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -38,9 +36,7 @@
       <h2>Not implemented</h2>
     </div>
     <h6>Raw Data</h6>
-    <pre class="code lang-js" style="padding-left:10px;">
-      <%= JSON.parse(@episode.states) -%>
-    </pre>
+    <pre class="code lang-js"><%= JSON.pretty_generate(JSON.parse(@episode.states)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -53,9 +49,7 @@
       <h2>Not implemented</h2>
     </div>
     <h6>Raw Data</h6>
-    <pre class="code lang-js" style="padding-left:10px;">
-      <%= JSON.parse(@episode.diff_states) -%>
-    </pre>
+    <pre class="code lang-js"><%= JSON.pretty_generate(JSON.parse(@episode.diff_states)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -68,8 +62,6 @@
       <h2>Not implemented</h2>
     </div>
     <h6>Raw Data</h6>
-    <pre class="code lang-js" style="padding-left:10px;">
-      <%= JSON.parse(@episode.commands) -%>
-    </pre>
+    <pre class="code lang-js"><%= JSON.pretty_generate(JSON.parse(@episode.commands)) -%></pre>
   </div>
 </div>

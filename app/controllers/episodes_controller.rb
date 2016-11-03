@@ -21,10 +21,7 @@ class EpisodesController < ApplicationController
     @episode = Episode.new
     @episode.name = params[:name]
     @episode.timestep = params[:timestep] unless params[:timestep].nil?
-    begin
-      @episode.control_points = JSON.parse(params[:control_points])
-    rescue JSON::ParserError
-    end
+    @episode.control_points = JSON.parse(params[:control_points]).to_json # Checks JSON validity during conversion
 
     respond_to do |format|
       if @episode.save
