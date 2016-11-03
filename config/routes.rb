@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   root :to => 'episodes#index'
 
+  get '/episodes/:id/bezier' => 'episodes#bezier'
+
   post '/episodes/:id' => 'episodes#update'
 
   resources :episodes, constraints: { id: /[0-9]+/ }

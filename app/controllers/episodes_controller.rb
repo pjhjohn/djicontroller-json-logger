@@ -77,4 +77,23 @@ class EpisodesController < ApplicationController
       format.json { head :ok }
     end
   end
+
+  def bezier
+    @episode = Episode.find(params[:id])
+    bez = Bezier::Curve.new(
+      Bezier::ControlPoint.new(0, 0, 0, 0),
+      Bezier::ControlPoint.new(2, 2, 0, 0),
+      Bezier::ControlPoint.new(2,-2, 0, 0),
+      Bezier::ControlPoint.new(4, 0, 0, 0),
+      Bezier::ControlPoint.new(6, 2, 0, 0),
+      Bezier::ControlPoint.new(6,-2, 0, 0),
+      Bezier::ControlPoint.new(8, 0, 0, 0)
+    )
+    render :json => {
+      :x => bez.point_on_curve(0.5).x,
+      :y => bez.point_on_curve(0.5).y,
+      :z => bez.point_on_curve(0.5).z,
+      :r => bez.point_on_curve(0.5).r,
+    }
+  end
 end
