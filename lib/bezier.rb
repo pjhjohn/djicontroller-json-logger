@@ -58,7 +58,7 @@ module Bezier
     # @return [Curve] a Bézier curve object. The minimum number of control points is 3.
     # @example
     #    initialize(p1, p2, p3)
-    #    initialize(p1, [20, 30], p3)
+    #    initialize(p1, [20, 30, 40, 50], p3)
     def initialize(*controlpoints)
       
       # need at least 3 control points
@@ -69,7 +69,7 @@ module Bezier
 
       @controlpoints = controlpoints.map { |e|
         if e.class == Array
-          ControlPoint.new(*e[0..1]) # make sure ControlPoint.new gets no more than 2 arguments. 'e' should contain at least 2 elements here
+          ControlPoint.new(*e[0..3]) # make sure ControlPoint.new gets no more than 4 arguments. 'e' should contain at least 4 elements here
         elsif e.class == ControlPoint
           e
         else
