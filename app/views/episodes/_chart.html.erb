@@ -1,15 +1,16 @@
 <canvas id="myChart"></canvas>
 <script>
   var ctx = document.getElementById('myChart').getContext('2d');
-  var data = [
-    { t:    0.0, x: 0.0, y: 0.0, z: 2.0, r:  0.0 },
-    { t:  400.0, x: 1.0, y: 0.0, z: 2.0, r: 45.0 },
-    { t:  800.0, x: 2.0, y: 0.0, z: 2.0, r:  0.0 },
-    { t: 1200.0, x: 3.0, y: 0.0, z: 2.0, r:-45.0 },
-    { t: 1600.0, x: 4.0, y: 0.0, z: 2.0, r:  0.0 },
-    { t: 2000.0, x: 5.0, y: 0.0, z: 2.0, r: 45.0 },
-  ];
   var listByKey = (key) => data.map(obj => obj[key]);
+  var data = <%= raw data %>;
+  var keys = <%= raw keys %>;
+  var labels = {
+    x: "WorldX",
+    y: "WorldY",
+    z: "WorldZ",
+    r: "WorldYawRotation",
+    white: "#fff",
+  }
   var colors = {
     x: "rgb(255, 127, 127)",
     y: "rgb(127, 255, 127)",
@@ -21,49 +22,16 @@
     type: 'line',
     data: {
       labels: listByKey("t"),
-      datasets: [
-        {
-          label: "WorldX",
-          fill: false,
-          borderColor: colors.x,
-          pointBorderColor: colors.x,
-          pointBackgroundColor: colors.white,
-          pointHoverBackgroundColor: colors.x,
-          pointHoverBorderColor: colors.white,
-          data: listByKey("x"),
-        },
-        {
-          label: "WorldY",
-          fill: false,
-          borderColor: colors.y,
-          pointBorderColor: colors.y,
-          pointBackgroundColor: colors.white,
-          pointHoverBackgroundColor: colors.y,
-          pointHoverBorderColor: colors.white,
-          data: listByKey("y"),
-        },
-        {
-          label: "WorldZ",
-          fill: false,
-          borderColor: colors.z,
-          pointBorderColor: colors.z,
-          pointBackgroundColor: colors.white,
-          pointHoverBackgroundColor: colors.z,
-          pointHoverBorderColor: colors.white,
-          data: listByKey("z"),
-        },
-        {
-          label: "WorldYawRotation",
-          fill: false,
-          borderColor: colors.r,
-          pointBorderColor: colors.r,
-          pointBackgroundColor: colors.white,
-          pointHoverBackgroundColor: colors.r,
-          pointHoverBorderColor: colors.white,
-          data: listByKey("r").map(val => val / 10),
-        }
-      ]
+      datasets: keys.map(key => ({
+        label: labels[key],
+        fill: false,
+        borderColor: colors[key],
+        pointBorderColor: colors[key],
+        pointBackgroundColor: colors.white,
+        pointHoverBackgroundColor: colors[key],
+        pointHoverBorderColor: colors.white,
+        data: listByKey(key).map(val => val * (key === "r" ? 0.1 : 1)),
+      }))
     },
   });
-  console.log(myChart);
 </script>

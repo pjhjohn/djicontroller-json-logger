@@ -19,7 +19,7 @@
     <span>Control Points of world reference trajectory in JSON. This field should be strictly formatted as JSON</span>
     <h6>Chart</h6>
     <div style="padding:10px;">
-      <%= render partial: "chart"%>
+      <%= render partial: "chart", locals: {data: @episode.control_points, keys: ["x", "y", "z", "r"]} %>
     </div>
     <h6>Raw Data</h6>
     <pre class="code lang-js"><%= JSON.pretty_generate(JSON.parse(@episode.control_points)) -%></pre>
