@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   root :to => 'episodes#index'
 
   get '/episodes/:id/update_states' => 'episodes#update_states'
+  get '/episodes/:id/update_diff_states' => 'episodes#update_diff_states'
 
   post '/episodes/:id' => 'episodes#update'
 
