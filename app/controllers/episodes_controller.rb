@@ -110,11 +110,22 @@ class EpisodesController < ApplicationController
 
     diff_states = (1...states.length).map do |i|
       prev, curr, timestep_s = states[i-1], states[i], @episode.timestep / 1000.0
+
+      # Position Coordinate : World -> Body
+      dx = (curr["x"] - prev["x"]) / timestep_s
+      dy = (curr["y"] - prev["y"]) / timestep_s
+      dz = (curr["z"] - prev["z"]) / timestep_s
+      v_body = Roto.rotate(
+        [dx, dy, dz],                                       # Point to rotate
+        (180 / Math::PI) * Math.atan2(dy, dx) - prev["r"],  # Rotation angle
+        [0, 0, 1]                                           # Rotation axis
+      )
+
       hash = {
-        :t => prev["t"],
-        :dx => (curr["x"] - prev["x"]) / timestep_s,
-        :dy => (curr["y"] - prev["y"]) / timestep_s,
-        :dz => (curr["z"] - prev["z"]) / timestep_s,
+        :t  => prev["t"],
+        :dx => v_body[0],
+        :dy => v_body[1],
+        :dz => v_body[2],
         :w  => (curr["r"] - prev["r"]) / timestep_s
       }
     end

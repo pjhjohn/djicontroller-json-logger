@@ -49,7 +49,7 @@
           pointBackgroundColor: colors.white,
           pointHoverBackgroundColor: colors[key],
           pointHoverBorderColor: colors.white,
-          data: listByKey(key).map(val => val * (key === "r" ? 0.1 : 1)),
+          data: listByKey(key).map(val => val * ("rw".includes(key) ? 0.1 : 1)),
         }))
       },
     });
