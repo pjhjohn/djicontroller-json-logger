@@ -8,10 +8,18 @@
     var data = <%= raw data %>;
     var keys = <%= raw keys %>;
     var labels = {
-      x: "WorldX",
-      y: "WorldY",
-      z: "WorldZ",
-      r: "WorldYawRotation",
+      x: "WorldPositionX",
+      y: "WorldPositionY",
+      z: "WorldPositionZ",
+      r: "WorldRotationYaw",
+      dx: "BodyVelocityX",
+      dy: "BodyVelocityY",
+      dz: "BodyVelocityZ",
+      w: "BodyAngVelocityYaw",
+      roll: "Roll",
+      pitch: "Pitch",
+      throttle: "Throttle",
+      yaw: "Yaw",
       white: "#fff",
     }
     var colors = {
@@ -19,6 +27,14 @@
       y: "rgb(127, 255, 127)",
       z: "rgb(127, 127, 255)",
       r: "rgb(127, 127, 127)",
+      dx: "rgb(255, 127, 127)",
+      dy: "rgb(127, 255, 127)",
+      dz: "rgb(127, 127, 255)",
+      w: "rgb(127, 127, 127)",
+      roll: "rgb(255, 127, 127)",
+      pitch: "rgb(127, 255, 127)",
+      throttle: "rgb(127, 127, 255)",
+      yaw: "rgb(127, 127, 127)",
       white: "#fff",
     };
     var <%= title %>Chart = new Chart(ctx, {
