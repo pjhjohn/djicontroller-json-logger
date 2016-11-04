@@ -135,4 +135,11 @@ class EpisodesController < ApplicationController
 
     redirect_to(@episode)
   end
+
+  def update_commands
+    @episode = Episode.find(params[:id])
+    diff_states = JSON.parse(@episode.diff_states)
+
+    redirect_to(@episode)
+  end
 end

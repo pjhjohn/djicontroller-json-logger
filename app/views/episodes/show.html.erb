@@ -59,8 +59,15 @@
 </div>
 <div class="divider"></div>
 <div class="columns">
-  <div class="column col-12" style="padding:15px;">
+  <div class="column col-7" style="padding:15px;padding-bottom:0px;">
     <h4>Episode.diff_states</h4>
+  </div>
+  <div class="column col-5" style="margin-top:20px;padding:15px;">
+    <a href="/episodes/<%=@episode.id%>/update_commands" class="btn btn-block">Update Episode.commands</a>
+  </div>
+</div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;padding-top:0px;">
     <span>Body referenced differential of states.</span>
     <span><strong>Must be formatted in JSON</strong></span>
     <h6>Chart</h6>
@@ -79,7 +86,7 @@
     <span><strong>Must be formatted in JSON</strong></span>
     <h6>Chart</h6>
     <div style="padding:10px;">
-      <h2>Not implemented</h2>
+      <%= render partial: "chart", locals: { title: "commands", data: @episode.commands, keys: ["roll", "pitch", "throttle", "yaw"] } %>
     </div>
     <h6>Raw Data</h6>
     <pre class="code lang-js"><%= JSON.pretty_generate(JSON.parse(@episode.commands)) -%></pre>

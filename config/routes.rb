@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   get '/episodes/:id/update_states' => 'episodes#update_states'
   get '/episodes/:id/update_diff_states' => 'episodes#update_diff_states'
+  get '/episodes/:id/update_commands' => 'episodes#update_commands'
 
   post '/episodes/:id' => 'episodes#update'
 
