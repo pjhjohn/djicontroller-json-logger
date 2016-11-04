@@ -108,6 +108,20 @@ class EpisodesController < ApplicationController
     @episode = Episode.find(params[:id])
     states = JSON.parse(@episode.states)
 
+    diff_states = (1...states.length).map do |i|
+      prev, curr, timestep_s = states[i-1], states[i], @episode.timestep / 1000.0
+      hash = {
+        :t => prev["t"],
+        :dx => (curr["x"] - prev["x"]) / timestep_s,
+        :dy => (curr["y"] - prev["y"]) / timestep_s,
+        :dz => (curr["z"] - prev["z"]) / timestep_s,
+        :w  => (curr["r"] - prev["r"]) / timestep_s
+      }
+    end
+
+    @episode.diff_states = diff_states.to_json
+    @episode.save
+
     redirect_to(@episode)
   end
 end
