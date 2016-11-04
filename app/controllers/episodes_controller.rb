@@ -136,9 +136,33 @@ class EpisodesController < ApplicationController
     redirect_to(@episode)
   end
 
+  ## Limitations of Drone (both positive & negative)
+  # Yaw : 100degrees/s
+  # Pitch Roll : 15m/s
+  # Throttle : 4m/s
+  def normalized_clip(value, limit)
+    clipped_val = value
+    clipped_val = limit if value > limit
+    clipped_val = -limit if value < -limit
+    return clipped_val / limit
+  end
+
   def update_commands
     @episode = Episode.find(params[:id])
     diff_states = JSON.parse(@episode.diff_states)
+
+    commands = diff_states.map do |diff_state|
+      {
+        :t        => diff_state["t"],
+        :roll     => normalized_clip( diff_state["dx"],  15.0), # same axis : front
+        :pitch    => normalized_clip(-diff_state["dy"],  15.0), # pitch axis towards right
+        :throttle => normalized_clip( diff_state["dz"],   4.0), # same axis : altitude
+        :yaw      => normalized_clip(-diff_state[ "w"], 100.0)  # yaw axis towards bottom
+      }
+    end
+
+    @episode.commands = commands.to_json
+    @episode.save
 
     redirect_to(@episode)
   end
