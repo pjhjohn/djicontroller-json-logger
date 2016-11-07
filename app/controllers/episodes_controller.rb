@@ -1,10 +1,22 @@
 class EpisodesController < ApplicationController
+  def json_deep_serialize (episode)
+    return {
+      :name           => episode.name,
+      :timestep       => episode.timestep,
+      :control_points => JSON.parse(episode.control_points),
+      :states         => JSON.parse(episode.states),
+      :diff_states    => JSON.parse(episode.diff_states),
+      :commands       => JSON.parse(episode.commands),
+      :created_at     => episode.created_at,
+      :updated_at     => episode.updated_at,
+    }
+  end
   def index
     @episodes = Episode.all
   
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @episodes }
+      format.json { render json: @episodes.map{|episode| json_deep_serialize(episode)} }
     end
   end
   
@@ -13,7 +25,7 @@ class EpisodesController < ApplicationController
   
     respond_to do |format|
       format.html # new.html.erb
-      format.json { render json: @episode }
+      format.json { render json: json_deep_serialize(@episode) }
     end
   end
   
@@ -27,7 +39,7 @@ class EpisodesController < ApplicationController
       if @episode.save
         flash[:notice] = 'Episode was successfully created.'
         format.html { redirect_to(@episode) }
-        format.json { render json: @episode, status: :created, location: @episode }
+        format.json { render json: json_deep_serialize(@episode), status: :created, location: @episode }
       else
         format.html { render action: 'new' }
         format.json { render json: @episode.errors, status: :unprocessable_entity }
@@ -40,7 +52,7 @@ class EpisodesController < ApplicationController
   
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @episode }
+      format.json { render json: json_deep_serialize(@episode) }
     end
   end
   
