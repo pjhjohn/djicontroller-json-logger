@@ -12,6 +12,13 @@ class EpisodesController < ApplicationController
       :updated_at     => episode.updated_at,
     }
   end
+
+  def clip_timestep (timestep)
+    return 40 if timestep < 40
+    return 200 if timestep > 200
+    return timestep
+  end
+
   def index
     @episodes = Episode.all
   
@@ -33,7 +40,7 @@ class EpisodesController < ApplicationController
   def create
     @episode = Episode.new
     @episode.name = params[:name]
-    @episode.timestep = params[:timestep] unless params[:timestep].nil?
+    @episode.timestep = clip_timestep(params[:timestep].to_i) unless params[:timestep].nil?
     @episode.control_points = JSON.parse(params[:control_points]).to_json # Checks JSON validity during conversion
 
     respond_to do |format|
@@ -66,7 +73,7 @@ class EpisodesController < ApplicationController
 
     episode_params = Hash.new
     episode_params[:name] = params[:name] unless params[:name].nil?
-    episode_params[:timestep] = params[:timestep] unless params[:timestep].nil?
+    episode_params[:timestep] = clip_timestep(params[:timestep].to_i) unless params[:timestep].nil?
     episode_params[:control_points] = JSON.parse(params[:control_points]).to_json # Checks JSON validity during conversion
   
     respond_to do |format|
