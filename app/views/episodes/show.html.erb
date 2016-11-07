@@ -10,9 +10,17 @@
   </div>
 </div>
 <div class="columns">
-  <div class="column col-12" style="padding:15px;">
+  <div class="column col-7" style="padding:15px;padding-bottom:0px;">
     <h4>Episode.timestep</h4>
-    <h6>Time interval between drone commands : <%= @episode.timestep %>ms</h6>
+  </div>
+  <div class="column col-5" style="margin-top:20px;padding:15px;">
+    <a href="/episodes/<%=@episode.id%>.json" download="Episode#<%=@episode.id%>-<%=@episode.name%>.json" class="btn btn-block">Download This Episode</a>
+  </div>
+</div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <span>Time interval between drone commands : </span>
+    <span><strong><%= @episode.timestep %>ms</strong></span>
   </div>
 </div>
 <div class="divider"></div>
