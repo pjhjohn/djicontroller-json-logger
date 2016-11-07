@@ -1,6 +1,7 @@
 class EpisodesController < ApplicationController
   def json_deep_serialize (episode)
     return {
+      :id             => episode.id,
       :name           => episode.name,
       :timestep       => episode.timestep,
       :control_points => JSON.parse(episode.control_points),
