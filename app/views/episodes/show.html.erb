@@ -41,7 +41,7 @@
       <%= render partial: "chart", locals: { title: "control_points", data: @episode.control_points, keys: ["x", "y", "z", "r"] } %>
     </div>
     <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:200px;"><%= JSON.pretty_generate(JSON.parse(@episode.control_points)) -%></pre>
+    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.control_points)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -62,7 +62,7 @@
       <%= render partial: "chart", locals: { title: "states", data: @episode.states, keys: ["x", "y", "z", "r"] } %>
     </div>
     <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:200px;"><%= JSON.pretty_generate(JSON.parse(@episode.states)) -%></pre>
+    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.states)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -83,7 +83,7 @@
       <%= render partial: "chart", locals: { title: "diff_states", data: @episode.diff_states, keys: ["dx", "dy", "dz", "w"] } %>
     </div>
     <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:200px;"><%= JSON.pretty_generate(JSON.parse(@episode.diff_states)) -%></pre>
+    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.diff_states)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -97,7 +97,7 @@
       <%= render partial: "chart", locals: { title: "commands", data: @episode.commands, keys: ["roll", "pitch", "throttle", "yaw"] } %>
     </div>
     <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:200px;"><%= JSON.pretty_generate(JSON.parse(@episode.commands)) -%></pre>
+    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.commands)) -%></pre>
   </div>
 </div>
 <script typt="text/javascript">
@@ -105,6 +105,6 @@
   for (let i = 0; i < codeBlocks.length; i++) {
     const block = codeBlocks[i];
     block.onmouseover = () => block.style.height = 'auto';
-    block.onmouseout = () => block.style.height = '200px';
+    block.onmouseout = () => block.style.height = '84px';
   }
 </script>
