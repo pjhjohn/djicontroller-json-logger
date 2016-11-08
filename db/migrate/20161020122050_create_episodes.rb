@@ -7,6 +7,7 @@ class CreateEpisodes < ActiveRecord::Migration
       t.string :states,         :default => [].to_json
       t.string :diff_states,    :default => [].to_json
       t.string :commands,       :default => [].to_json
+      t.string :simulator_logs, :default => [].to_json
 
       t.timestamps null: false
     end

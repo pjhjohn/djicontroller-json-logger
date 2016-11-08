@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get '/episodes/:id/update_commands' => 'episodes#update_commands'
 
   post '/episodes/:id' => 'episodes#update'
+  post '/episodes/:id/update_simulator_log' => 'episodes#update_simulator_log'
 
   resources :episodes, constraints: { id: /[0-9]+/ }
   # The priority is based upon order of creation: first created -> highest priority.

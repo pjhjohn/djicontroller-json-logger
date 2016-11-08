@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20161020122050) do
     t.string   "states",         default: "[]"
     t.string   "diff_states",    default: "[]"
     t.string   "commands",       default: "[]"
+    t.string   "simulator_logs", default: "[]"
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
   end

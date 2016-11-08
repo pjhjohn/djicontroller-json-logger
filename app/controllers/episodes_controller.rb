@@ -106,6 +106,23 @@ class EpisodesController < ApplicationController
     redirect_to(@episode)
   end
 
+  def update_simulator_log # Assume accept only json request from android client
+    @episode = Episode.find(params[:id])
+    episode_params = Hash.new
+    episode_params[:simulator_logs] = JSON.parse(@episode.simulator_logs).push(params[:events]).to_json unless params[:events].nil?
+
+    respond_to do |format|
+      if @episode.update(episode_params)
+        flash[:notice] = 'Simulator Log has been successfully pushed.'
+        format.html { redirect_to(@episode) }
+        format.json { head :ok }
+      else
+        format.html { render action: 'show' }
+        format.json { render json: @episode.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   ## Functions for Episode Data Update ##
   def update_episode_states(episode)
     control_points = JSON.parse(episode.control_points)
@@ -206,6 +223,7 @@ class EpisodesController < ApplicationController
       :states         => JSON.parse(episode.states),
       :diff_states    => JSON.parse(episode.diff_states),
       :commands       => JSON.parse(episode.commands),
+      :simulator_logs => JSON.parse(episode.simulator_logs),
       :created_at     => episode.created_at,
       :updated_at     => episode.updated_at,
     }
