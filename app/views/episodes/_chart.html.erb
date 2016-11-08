@@ -1,9 +1,9 @@
 <% if JSON.parse(data).empty? %>
   <h2>Empty Data</h2>
 <% else %>
-  <canvas id="<%= title %>"></canvas>
+  <canvas id="<%= title %>_chart"></canvas>
   <script>
-    var ctx = document.getElementById('<%= title %>').getContext('2d');
+    var ctx = document.getElementById('<%= title %>_chart').getContext('2d');
     var listByKey = (key) => data.map(obj => obj[key]);
     var data = <%= raw data %>;
     var keys = <%= raw keys %>;

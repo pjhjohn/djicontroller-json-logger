@@ -11,7 +11,7 @@
 </div>
 <div class="columns">
   <div class="column col-7" style="padding:15px;padding-bottom:0px;">
-    <h4>Episode.timestep</h4>
+    <h4><a id="timestep" href="#timestep" style="text-decoration:none;">Episode.timestep</a></h4>
   </div>
   <div class="column col-5" style="margin-top:20px;padding:15px;">
     <a href="/episodes/<%=@episode.id%>.json" download="Episode#<%=@episode.id%>-<%=@episode.name%>.json" class="btn btn-block">Download This Episode</a>
@@ -26,7 +26,7 @@
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-7" style="padding:15px;padding-bottom:0px;">
-    <h4>Episode.control_points</h4>
+    <h4><a id="control_points" href="#control_points" style="text-decoration:none;">Episode.control_points</a></h4>
   </div>
   <div class="column col-5" style="margin-top:20px;padding:15px;">
     <a href="/episodes/<%=@episode.id%>/update_states" class="btn btn-block">Update Episode.states</a>
@@ -47,7 +47,7 @@
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-7" style="padding:15px;padding-bottom:0px;">
-    <h4>Episode.states</h4>
+    <h4><a id="states" href="#states" style="text-decoration:none;">Episode.states</a></h4>
   </div>
   <div class="column col-5" style="margin-top:20px;padding:15px;">
     <a href="/episodes/<%=@episode.id%>/update_diff_states" class="btn btn-block">Update Episode.diff_states</a>
@@ -68,7 +68,7 @@
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-7" style="padding:15px;padding-bottom:0px;">
-    <h4>Episode.diff_states</h4>
+    <h4><a id="diff_states" href="#diff_states" style="text-decoration:none;">Episode.diff_states</a></h4>
   </div>
   <div class="column col-5" style="margin-top:20px;padding:15px;">
     <a href="/episodes/<%=@episode.id%>/update_commands" class="btn btn-block">Update Episode.commands</a>
@@ -89,7 +89,7 @@
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;">
-    <h4>Episode.commands</h4>
+    <h4><a id="commands" href="#commands" style="text-decoration:none;">Episode.commands</a></h4>
     <span>Actual commands for drone with repect to drone's body coordinate in JSON.</span>
     <span><strong>Must be formatted in JSON</strong></span>
     <h6>Chart</h6>
@@ -103,7 +103,7 @@
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;">
-    <h4>Episode.simulator_logs</h4>
+    <h4><a id="simulator_logs" href="#simulator_logs" style="text-decoration:none;">Episode.simulator_logs</a></h4>
     <span>Simulator Log from the dji flight controller simulator in android.</span>
     <span><strong>Must be formatted in JSON</strong></span>
     <h6>Raw Data</h6>
