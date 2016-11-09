@@ -3,9 +3,16 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   # protect_from_forgery with: :exception
 
-  ## Functions for Episode Data Update ##
-  def update_episode_states(episode)
-    control_points = JSON.parse(episode.control_points)
+  ## Alias functions for episode data update ##
+  def control_points_to_commands(control_points, timestep)
+    states = control_points_to_states(control_points, timestep)
+    diff_states = states_to_diff_states(states, timestep)
+    commands = diff_states_to_commands(diff_states)
+    return commands
+  end
+
+  ## Episode Data Manipulation ##
+  def control_points_to_states(control_points, timestep)
     bez = Bezier::Curve.new(*control_points.map{ |point| [point["x"], point["y"], point["z"], point["r"]]})
     max_time = control_points.last["t"]
 
@@ -20,18 +27,14 @@ class ApplicationController < ActionController::Base
         :z => point.z,
         :r => point.r,
       })
-      time += episode.timestep
+      time += timestep
     end
-
-    episode.states = states.to_json
-    episode.save
+    return states
   end
 
-  def update_episode_diff_states(episode)
-    states = JSON.parse(episode.states)
-
+  def states_to_diff_states(states, timestep)
     diff_states = (1...states.length).map do |i|
-      prev, curr, timestep_s = states[i-1], states[i], episode.timestep / 1000.0
+      prev, curr, timestep_s = states[i-1], states[i], timestep / 1000.0
 
       # Position Coordinate : World -> Body
       dx = (curr["x"] - prev["x"]) / timestep_s
@@ -51,14 +54,10 @@ class ApplicationController < ActionController::Base
         :w  => clip((curr["r"] - prev["r"]) / timestep_s, 100.0), # Will convert into Yaw
       }
     end
-
-    episode.diff_states = diff_states.to_json
-    episode.save
+    return diff_states
   end
 
-  def update_episode_commands(episode)
-    diff_states = JSON.parse(episode.diff_states)
-
+  def diff_states_to_commands(diff_states)
     commands = diff_states.map do |diff_state|
       {
         :t        => diff_state["t"],
@@ -68,12 +67,10 @@ class ApplicationController < ActionController::Base
         :yaw      => normalized_clip(-diff_state[ "w"], 100.0)  # yaw axis towards bottom
       }
     end
-
-    episode.commands = commands.to_json
-    episode.save
+    return commands
   end
 
-  ## Calculations ##
+  ## Simple Math ##
   ## Limitations of Drone (both positive & negative)
   # Yaw : 100degrees/s
   # Pitch Roll : 15m/s

@@ -122,4 +122,20 @@ class EpisodesController < ApplicationController
       end
     end
   end
+
+  ## Alias shortcut functions for updating episode data ##
+  def update_episode_states(episode)
+    episode.states = control_points_to_states(JSON.parse(episode.control_points), episode.timestep).to_json
+    return episode.save
+  end
+
+  def update_episode_diff_states(episode)
+    episode.diff_states = states_to_diff_states(JSON.parse(episode.states), episode.timestep).to_json
+    return episode.save
+  end
+
+  def update_episode_commands(episode)
+    episode.commands = diff_states_to_commands(JSON.parse(episode.diff_states)).to_json
+    return episode.save
+  end
 end
