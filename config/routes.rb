@@ -1,15 +1,22 @@
 Rails.application.routes.draw do
 
+  # Root
   root :to => 'episodes#index'
 
+  # Tajectory Optimization
+  get '/trajectory_optimization/:id/init' => 'trajectory_optimization#init'
+  get '/trajectory_optimization/:id/continue' => 'trajectory_optimization#continue'
+
+  # Additional Update Routes
   get '/episodes/:id/update_states' => 'episodes#update_states'
   get '/episodes/:id/update_diff_states' => 'episodes#update_diff_states'
   get '/episodes/:id/update_commands' => 'episodes#update_commands'
-
-  post '/episodes/:id' => 'episodes#update'
   post '/episodes/:id/update_simulator_log' => 'episodes#update_simulator_log'
 
+  # Base RESTful Routes
+  post '/episodes/:id' => 'episodes#update'
   resources :episodes, constraints: { id: /[0-9]+/ }
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
