@@ -4,8 +4,8 @@ Rails.application.routes.draw do
   root :to => 'episodes#index'
 
   # Tajectory Optimization
-  get '/trajectory_optimization/:id/init' => 'trajectory_optimization#init'
-  get '/trajectory_optimization/:id/continue' => 'trajectory_optimization#continue'
+  post '/trajectory_optimization/:id/init' => 'trajectory_optimization#init'
+  post '/trajectory_optimization/:id/continue' => 'trajectory_optimization#continue'
 
   # Additional Update Routes
   get '/episodes/:id/update_states' => 'episodes#update_states'
