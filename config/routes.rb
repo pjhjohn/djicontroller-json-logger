@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   root :to => 'episodes#index'
 
   # Tajectory Optimization
-  post '/trajectory_optimization/:id/init' => 'trajectory_optimization#init'
+  post '/trajectory_optimization/init' => 'trajectory_optimization#init'
   post '/trajectory_optimization/:id/continue' => 'trajectory_optimization#continue'
 
   # Additional Update Routes

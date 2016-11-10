@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161020122050) do
+ActiveRecord::Schema.define(version: 20161109131827) do
 
   create_table "episodes", force: :cascade do |t|
     t.string   "name"
@@ -23,6 +23,22 @@ ActiveRecord::Schema.define(version: 20161020122050) do
     t.string   "simulator_logs", default: "[]"
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
+  end
+
+  create_table "trajectory_optimizations", force: :cascade do |t|
+    t.string   "episode_name"
+    t.integer  "episode_timestep"
+    t.string   "episode_control_points"
+    t.string   "episode_states"
+    t.string   "episode_diff_states"
+    t.string   "episode_commands"
+    t.string   "control_points_list"
+    t.string   "commands_list"
+    t.string   "simulator_log_list",      default: "[]"
+    t.integer  "max_iteration_count",     default: 10
+    t.integer  "current_iteration_index", default: 0
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
   end
 
 end

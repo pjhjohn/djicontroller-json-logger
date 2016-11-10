@@ -5,9 +5,9 @@ class ApplicationController < ActionController::Base
 
   ## Alias functions for episode data update ##
   def control_points_to_commands(control_points, timestep)
-    states = control_points_to_states(control_points, timestep)
-    diff_states = states_to_diff_states(states, timestep)
-    commands = diff_states_to_commands(diff_states)
+    states = JSON.parse(control_points_to_states(control_points, timestep).to_json)
+    diff_states = JSON.parse(states_to_diff_states(states, timestep).to_json)
+    commands = JSON.parse(diff_states_to_commands(diff_states).to_json)
     return commands
   end
 

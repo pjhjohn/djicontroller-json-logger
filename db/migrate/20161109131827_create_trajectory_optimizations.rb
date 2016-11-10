@@ -1,6 +1,7 @@
 class CreateTrajectoryOptimizations < ActiveRecord::Migration
   def change
     create_table :trajectory_optimizations do |t|
+      # Episode Data
       t.string :episode_name
       t.integer :episode_timestep
       t.string :episode_control_points
@@ -8,6 +9,7 @@ class CreateTrajectoryOptimizations < ActiveRecord::Migration
       t.string :episode_diff_states
       t.string :episode_commands
       
+      # Trajectory Optimization Iteration
       t.string :control_points_list
       t.string :commands_list
       t.string :simulator_log_list,       :default => [].to_json
