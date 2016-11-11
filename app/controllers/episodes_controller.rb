@@ -79,7 +79,7 @@ class EpisodesController < ApplicationController
     @episode.destroy
   
     respond_to do |format|
-      format.html { redirect_to action: "index" }
+      format.html { redirect_to(episodes_url) }
       format.json { head :ok }
     end
   end
