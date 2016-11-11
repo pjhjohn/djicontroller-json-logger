@@ -23,10 +23,10 @@
             </div>
             <div class="card-body">
               <div>Timestep: <%= episode.timestep %>ms</div>
-              <div>Control Points: <%= JSON.parse(episode.control_points).length %></div>
               <div>States: <%= JSON.parse(episode.states).length %></div>
               <div>State diffs: <%= JSON.parse(episode.diff_states).length %></div>
               <div>Commands: <%= JSON.parse(episode.commands).length %></div>
+              <div>Simulator Logs: <%= JSON.parse(episode.simulator_logs).length %></div>
             </div>
           </div>
           </a>

@@ -2,7 +2,7 @@
   <div class="column col-7" style="padding:15px;">
     <h3>
       <a href="/trajectory_optimizations" class="btn btn-link zmdi zmdi-chevron-left" style="padding:0px;"></a>
-      #<%=@optimization.id%>. <%= @optimization.episode_name %>
+      #<%=@optimization.id%>. <%= @optimization.episode.name %>
     </h3>
   </div>
   <div class="column col-5" style="margin-top:30px;padding:15px;">
@@ -14,27 +14,33 @@
     <h4><a id="inspect" href="#inspect" style="text-decoration:none;">Brief Inspection</a></h4>
   </div>
   <div class="column col-5" style="margin-top:20px;padding:15px;">
-    <a href="/trajectory_optimizations/<%=@optimization.id%>.json" download="optimization#<%=@optimization.id%>-<%=@optimization.episode_name%>.json" class="btn btn-block">Download This optimization</a>
+    <a href="/trajectory_optimizations/<%=@optimization.id%>.json" download="optimization#<%=@optimization.id%>-<%=@optimization.episode.name%>.json" class="btn btn-block">Download This optimization</a>
   </div>
 </div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;">
-    <div>Time interval between drone commands : <strong><%= @optimization.episode_timestep %>ms</strong></div>
+    <div>Time interval between drone commands : <strong><%= @optimization.episode.timestep %>ms</strong></div>
     <div>Max Iteration Count : <strong><%= @optimization.max_iteration_count %></strong></div>
   </div>
 </div>
 <div class="divider"></div>
 <div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <a href="/episodes/<%= @optimization.episode.id %>" class="btn btn-block">Go to Related Episode : #<%= @optimization.episode.id %> <%= @optimization.episode.name %></a>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
   <div class="column col-12" style="padding:15px;padding-bottom:0px;">
-    <h4><a id="control_points" href="#control_points" style="text-decoration:none;">TrajectoryOptimization.control_points_list</a></h4>
+    <h4><a id="states" href="#states" style="text-decoration:none;">TrajectoryOptimization.states_list</a></h4>
   </div>
 </div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;padding-top:0px;">
-    <span>Control Points of world reference trajectory in JSON.</span>
+    <span>States of world reference trajectory in JSON.</span>
     <span><strong>Must be formatted in JSON. Rotations in degree, divided by 10 for representation.</strong></span>
     <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.control_points_list)) -%></pre>
+    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.states_list)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>

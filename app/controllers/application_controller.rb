@@ -4,34 +4,13 @@ class ApplicationController < ActionController::Base
   # protect_from_forgery with: :exception
 
   ## Alias functions for episode data update ##
-  def control_points_to_commands(control_points, timestep)
-    states = JSON.parse(control_points_to_states(control_points, timestep).to_json)
+  def states_to_commands(states, timestep)
     diff_states = JSON.parse(states_to_diff_states(states, timestep).to_json)
     commands = JSON.parse(diff_states_to_commands(diff_states).to_json)
     return commands
   end
 
   ## Episode Data Manipulation ##
-  def control_points_to_states(control_points, timestep)
-    bez = Bezier::Curve.new(*control_points.map{ |point| [point["x"], point["y"], point["z"], point["r"]]})
-    max_time = control_points.last["t"]
-
-    states = []
-    time = 0
-    while time <= max_time do
-      point = bez.point_on_curve(time / max_time)
-      states.push({
-        :t => time,
-        :x => point.x,
-        :y => point.y,
-        :z => point.z,
-        :r => point.r,
-      })
-      time += timestep
-    end
-    return states
-  end
-
   def states_to_diff_states(states, timestep)
     diff_states = (1...states.length).map do |i|
       prev, curr, timestep_s = states[i-1], states[i], timestep / 1000.0
@@ -88,5 +67,33 @@ class ApplicationController < ActionController::Base
 
   def normalized_clip(value, limit)
     return clip(value, limit) / limit
+  end
+
+  ## Serialization ##
+  def serialize_episode (episode)
+    return {
+      :id             => episode.id,
+      :name           => episode.name,
+      :timestep       => episode.timestep,
+      :states         => JSON.parse(episode.states),
+      :diff_states    => JSON.parse(episode.diff_states),
+      :commands       => JSON.parse(episode.commands),
+      :simulator_logs => JSON.parse(episode.simulator_logs),
+      :created_at     => episode.created_at,
+      :updated_at     => episode.updated_at,
+    }
+  end
+
+  def serialize_trajectory_optimization (optimization)
+    return {
+      :episode                  => serialize_episode(optimization.episode),
+      :states_list              => JSON.parse(optimization.states_list),
+      :commands_list            => JSON.parse(optimization.commands_list),
+      :simulator_log_list       => JSON.parse(optimization.simulator_log_list),
+      :max_iteration_count      => optimization.max_iteration_count,
+      :current_iteration_index  => optimization.current_iteration_index,
+      :created_at               => optimization.created_at,
+      :updated_at               => optimization.updated_at,
+    }
   end
 end

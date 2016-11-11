@@ -9,17 +9,10 @@ class TrajectoryOptimizationController < ApplicationController
 
     # Instantiate TrajectoryOptimization
     @optimization = TrajectoryOptimization.new
-
-    # Direct Copy from @episode
-    @optimization.episode_name = @episode.name
-    @optimization.episode_timestep = @episode.timestep
-    @optimization.episode_control_points = @episode.control_points
-    @optimization.episode_states = @episode.states
-    @optimization.episode_diff_states = @episode.diff_states
-    @optimization.episode_commands = @episode.commands
+    @optimization.episode_id = @episode.id
 
     # Initialization of TrajectoryOptimization Environments
-    @optimization.control_points_list = [JSON.parse(@episode.control_points)].to_json
+    @optimization.states_list = [JSON.parse(@episode.states)].to_json
     @optimization.commands_list = [JSON.parse(@episode.commands)].to_json
     @optimization.max_iteration_count = params[:max_iteration_count] unless params[:max_iteration_count].nil?
 
@@ -37,26 +30,25 @@ class TrajectoryOptimizationController < ApplicationController
 
     # Push to update simulator_log_list from client
     @optimization.simulator_log_list = JSON.parse(@optimization.simulator_log_list).push(params[:events]).to_json
-    @optimization.save
 
     # Instantiate data for current iteration
     timestep  = @optimization.episode_timestep
     current   = @optimization.current_iteration_index
     max       = @optimization.max_iteration_count
-    control_points_list = JSON.parse(@optimization.control_points_list)
+    states_list         = JSON.parse(@optimization.states_list)
     commands_list       = JSON.parse(@optimization.commands_list)
     simulator_log_list  = JSON.parse(@optimization.simulator_log_list)
 
-    # Calculate difference factor from current control_points & simulator_log
-    error = error_against_reference(control_points_list[current], simulator_log_list)
+    # Calculate difference factor from current states & simulator_log
+    error = error_against_reference(states_list[current], simulator_log_list)
 
-    # Calculate update difference of current control_points
-    diff_control_points = diff_control_points_to_update(control_points_list[current], error)
+    # Calculate update difference of current states
+    diff_states = diff_states_to_update(states_list[current], error)
 
-    # Next Iteration : update control_points & commands
+    # Next Iteration : update states & commands
     if current < max - 1
-      @optimization.control_points_list = control_points_list.push(update_control_points(control_points_list[current], diff_control_points)).to_json # TODO : update from diff_control_points
-      @optimization.commands_list = commands_list.push(control_points_to_commands(control_points_list[current], timestep)).to_json
+      @optimization.states_list = states_list.push(update_states(states_list[current], diff_states)).to_json # TODO : update from diff_states
+      @optimization.commands_list = commands_list.push(states_to_commands(states_list[current], timestep)).to_json
     end
     @optimization.current_iteration_index = current + 1
     @optimization.save
@@ -65,16 +57,16 @@ class TrajectoryOptimizationController < ApplicationController
     render :json => build_trajectory_optimization_feedback(@optimization)
   end
 
-  def error_against_reference(control_points, simulator_log)
+  def error_against_reference(states, simulator_log)
     return nil # TODO : implement this
   end
 
-  def diff_control_points_to_update (control_points, error)
+  def diff_states_to_update (states, error)
     return nil # TODO : implement this
   end
 
-  def update_control_points(control_points, diff_control_points)
-    return control_points # TODO : implement this
+  def update_states(states, diff_states)
+    return states # TODO : implement this
   end
 
   def build_trajectory_optimization_feedback(optimization)
@@ -82,7 +74,7 @@ class TrajectoryOptimizationController < ApplicationController
     return {
       :id => optimization.id,
       :current_iteration_index => current,
-      :timestep => optimization.episode_timestep,
+      :timestep => optimization.episode.timestep,
       :success => true, # TODO : implement this
       :commands => current >= max ? [] : JSON.parse(optimization.commands_list)[current],
       :error_message => "Error Message!!" # TODO : implement this
