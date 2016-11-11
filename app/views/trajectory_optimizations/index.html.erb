@@ -1,0 +1,35 @@
+<div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <h3>Trajectory Optimizations</h3>
+  </div>
+</div>
+<div class="divider"></div>
+<% if @optimizations.empty? %>
+  <div class="columns">
+    <h1>No Trajectory Optimizations</h1>
+  </div>
+<% else %>
+  <% @optimizations.each_slice(4).each do |optimization_row| %>
+    <div class="columns">
+      <% optimization_row.each do |optimization| %>
+        <div class="column col-3" style="padding:15px;">
+          <a href="/trajectory_optimizations/<%= optimization.id %>" style="text-decoration:none;">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title"><%= optimization.id %>. <%= optimization.episode_name %></h4>
+            </div>
+            <div class="card-body">
+              <div>Timestep: <%= optimization.episode_timestep %>ms</div>
+              <div>Iteration Count: <%= optimization.max_iteration_count %></div>
+              <div>Control Points: <%= JSON.parse(optimization.control_points_list).length %></div>
+              <div>Commands: <%= JSON.parse(optimization.commands_list).length %></div>
+              <div>Simulator Logs: <%= JSON.parse(optimization.simulator_log_list).length %></div>
+            </div>
+          </div>
+          </a>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+</div>

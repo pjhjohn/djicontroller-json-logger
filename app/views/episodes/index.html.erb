@@ -7,29 +7,39 @@
   </div>
 </div>
 <div class="divider"></div>
-<div class="columns">
-  <% if @episodes.empty? %>
+<% if @episodes.empty? %>
+  <div class="columns">
     <h1>No Episodes</h1>
-  <% else %>
-    <% @episodes.each do |episode| %>
-      <div class="column col-3" style="padding:15px;">
-        <a href="/episodes/<%= episode.id %>" style="text-decoration:none;">
-        <div class="card">
-          <div class="card-header">
-            <h4 class="card-title"><%= episode.id %>. <%= episode.name %></h4>
+  </div>
+<% else %>
+  <% @episodes.each_slice(4).each do |episode_row| %>
+    <div class="columns">
+      <% episode_row.each do |episode| %>
+        <div class="column col-3" style="padding:15px;">
+          <a href="/episodes/<%= episode.id %>" style="text-decoration:none;">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title"><%= episode.id %>. <%= episode.name %></h4>
+            </div>
+            <div class="card-body">
+              <div>Timestep: <%= episode.timestep %>ms</div>
+              <div>Control Points: <%= JSON.parse(episode.control_points).length %></div>
+              <div>States: <%= JSON.parse(episode.states).length %></div>
+              <div>State diffs: <%= JSON.parse(episode.diff_states).length %></div>
+              <div>Commands: <%= JSON.parse(episode.commands).length %></div>
+            </div>
           </div>
-          <div class="card-body">
-            <div>Timestep: <%= episode.timestep %></div>
-            <div>Control Points: <%= JSON.parse(episode.control_points).length %></div>
-            <div>States: <%= JSON.parse(episode.states).length %></div>
-            <div>State diffs: <%= JSON.parse(episode.diff_states).length %></div>
-            <div>Commands: <%= JSON.parse(episode.commands).length %></div>
-          </div>
+          </a>
         </div>
-        </a>
-      </div>
-    <%end %>
-  <%end %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+<div class="divider"></div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <a href="/trajectory_optimizations" class="btn btn-block">Trajectory Optimization Dashboard</a>
+  </div>
 </div>
 <div class="divider"></div>
 <h4>Open Source References</h4>

@@ -7,11 +7,15 @@ Rails.application.routes.draw do
   post '/trajectory_optimization/init' => 'trajectory_optimization#init'
   post '/trajectory_optimization/:id/continue' => 'trajectory_optimization#continue'
 
+  # Trajectory Optimization Viewer
+  get  '/trajectory_optimizations/:id/destroy' => 'trajectory_optimizations#destroy', constraints: { id: /[0-9]+/ }
+  resources :trajectory_optimizations, constraints: { id: /[0-9]+/ }
+
   # Additional Update Routes
-  get '/episodes/:id/update_states' => 'episodes#update_states'
-  get '/episodes/:id/update_diff_states' => 'episodes#update_diff_states'
-  get '/episodes/:id/update_commands' => 'episodes#update_commands'
-  post '/episodes/:id/update_simulator_log' => 'episodes#update_simulator_log'
+  get  '/episodes/:id/update_states'        => 'episodes#update_states'        , constraints: { id: /[0-9]+/ }
+  get  '/episodes/:id/update_diff_states'   => 'episodes#update_diff_states'   , constraints: { id: /[0-9]+/ }
+  get  '/episodes/:id/update_commands'      => 'episodes#update_commands'      , constraints: { id: /[0-9]+/ }
+  post '/episodes/:id/update_simulator_log' => 'episodes#update_simulator_log' , constraints: { id: /[0-9]+/ }
 
   # Base RESTful Routes
   post '/episodes/:id' => 'episodes#update'
