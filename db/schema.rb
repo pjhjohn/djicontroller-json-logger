@@ -26,13 +26,9 @@ ActiveRecord::Schema.define(version: 20161109131827) do
   end
 
   create_table "trajectory_optimizations", force: :cascade do |t|
-    t.string   "episode_name"
-    t.integer  "episode_timestep"
-    t.string   "episode_control_points"
-    t.string   "episode_states"
-    t.string   "episode_diff_states"
-    t.string   "episode_commands"
+    t.integer  "episode_id"
     t.string   "control_points_list"
+    t.string   "states_list"
     t.string   "commands_list"
     t.string   "simulator_log_list",      default: "[]"
     t.integer  "max_iteration_count",     default: 10
