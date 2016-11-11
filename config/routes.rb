@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   # Tajectory Optimization
   post '/trajectory_optimization/init' => 'trajectory_optimization#init'
-  post '/trajectory_optimization/:id/continue' => 'trajectory_optimization#continue'
+  post '/trajectory_optimization/:id/continue' => 'trajectory_optimization#continue', constraints: { id: /[0-9]+/ }
 
   # Trajectory Optimization Viewer
   get  '/trajectory_optimizations/:id/destroy' => 'trajectory_optimizations#destroy', constraints: { id: /[0-9]+/ }
@@ -18,7 +18,8 @@ Rails.application.routes.draw do
   post '/episodes/:id/update_simulator_log' => 'episodes#update_simulator_log' , constraints: { id: /[0-9]+/ }
 
   # Base RESTful Routes
-  post '/episodes/:id' => 'episodes#update'
+  post '/episodes/:id' => 'episodes#update'         , constraints: { id: /[0-9]+/ }
+  get  '/episodes/:id/destroy' => 'episodes#destroy', constraints: { id: /[0-9]+/ }
   resources :episodes, constraints: { id: /[0-9]+/ }
 
   # The priority is based upon order of creation: first created -> highest priority.

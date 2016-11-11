@@ -55,15 +55,15 @@ class EpisodesController < ApplicationController
     @episode = Episode.find(params[:id])
 
     episode_params = Hash.new
-    episode_params[:name] = params[:name] unless params[:name].nil?
-    episode_params[:timestep] = clip(params[:timestep].to_i, 80, 120) unless params[:timestep].nil?
-    episode_params[:control_points] = JSON.parse(params[:control_points]).to_json # Checks JSON validity during conversion
+    # episode_params[:name] = params[:name] unless params[:name].nil?
+    # episode_params[:timestep] = clip(params[:timestep].to_i, 80, 120) unless params[:timestep].nil?
+    # episode_params[:control_points] = JSON.parse(params[:control_points]).to_json # Checks JSON validity during conversion
 
     respond_to do |format|
       if @episode.update(episode_params)
-        update_episode_states(@episode)
-        update_episode_diff_states(@episode)
-        update_episode_commands(@episode)
+        # update_episode_states(@episode)
+        # update_episode_diff_states(@episode)
+        # update_episode_commands(@episode)
         flash[:notice] = 'Episode was successfully updated.'
         format.html { redirect_to(@episode) }
         format.json { head :ok }
@@ -79,7 +79,7 @@ class EpisodesController < ApplicationController
     @episode.destroy
   
     respond_to do |format|
-      format.html { redirect_to(episodes_url) }
+      format.html { redirect_to action: "index" }
       format.json { head :ok }
     end
   end
