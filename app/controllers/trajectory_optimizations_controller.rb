@@ -22,7 +22,7 @@ class TrajectoryOptimizationsController < ApplicationController
     @optimization.destroy
 
     respond_to do |format|
-      format.html { redirect_to action: "index" }
+      format.html { redirect_to(trajectory_optimizations_url) }
       format.json { head :ok }
     end
   end
