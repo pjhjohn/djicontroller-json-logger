@@ -3,11 +3,12 @@
 <% else %>
   <canvas id="<%= title %>_chart"></canvas>
   <script>
-    var ctx = document.getElementById('<%= title %>_chart').getContext('2d');
-    var listByKey = (key) => data.map(obj => obj[key]);
-    var data = <%= raw data %>;
-    var keys = <%= raw keys %>;
-    var labels = {
+  {
+    const ctx = document.getElementById('<%= title %>_chart').getContext('2d');
+    const listByKey = (key) => data.map(obj => obj[key]);
+    const data = <%= raw data %>;
+    const keys = <%= raw keys %>;
+    const labels = {
       x: "WorldPositionX",
       y: "WorldPositionY",
       z: "WorldPositionZ",
@@ -22,7 +23,7 @@
       yaw: "Yaw",
       white: "#fff",
     }
-    var colors = {
+    const colors = {
       x: "rgb(255, 127, 127)",
       y: "rgb(127, 255, 127)",
       z: "rgb(127, 127, 255)",
@@ -37,7 +38,7 @@
       yaw: "rgb(127, 127, 127)",
       white: "#fff",
     };
-    var <%= title %>Chart = new Chart(ctx, {
+    const <%= title %>Chart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: listByKey("t"),
@@ -53,5 +54,6 @@
         }))
       },
     });
+  }
   </script>
 <% end %>
