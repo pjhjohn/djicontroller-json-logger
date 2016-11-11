@@ -89,20 +89,4 @@ class ApplicationController < ActionController::Base
   def normalized_clip(value, limit)
     return clip(value, limit) / limit
   end
-
-  ## Serialization ##
-  def json_deep_serialize (episode)
-    return {
-      :id             => episode.id,
-      :name           => episode.name,
-      :timestep       => episode.timestep,
-      :control_points => JSON.parse(episode.control_points),
-      :states         => JSON.parse(episode.states),
-      :diff_states    => JSON.parse(episode.diff_states),
-      :commands       => JSON.parse(episode.commands),
-      :simulator_logs => JSON.parse(episode.simulator_logs),
-      :created_at     => episode.created_at,
-      :updated_at     => episode.updated_at,
-    }
-  end
 end
