@@ -14,10 +14,10 @@
       positionX: "PositionX",
       positionY: "PositionY",
       positionZ: "PositionZ",
-      x: "WorldPositionX",
-      y: "WorldPositionY",
-      z: "WorldPositionZ",
-      r: "WorldRotationYaw",
+      x: "PositionX",
+      y: "PositionY",
+      z: "PositionZ",
+      r: "Yaw",
       dx: "BodyVelocityX",
       dy: "BodyVelocityY",
       dz: "BodyVelocityZ",
@@ -49,19 +49,29 @@
     const <%= title %>Chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: listByKey(data[0], time_param).map(value => value - data[0][0][time_param]),
-        datasets: data.map(datum => keys.map(key => ({
-            label: labels[key],
+        datasets: data.map((datum, index) => keys.map(key => ({
+            label: labels[key] + "_" + index,
             fill: false,
             borderColor: colors[key],
             pointBorderColor: colors[key],
             pointBackgroundColor: colors.white,
             pointHoverBackgroundColor: colors[key],
             pointHoverBorderColor: colors.white,
-            data: listByKey(datum, key).map(val => val * ("rw".includes(key) ? 0.1 : 1)),
+            data: datum.map(obj => ({
+              x: obj[time_param],
+              y: obj[key] * ("rwyaw".includes(key) ? 0.1 : 1)
+            })),
           }))
         ).reduce((a, b) => a.concat(b))
       },
+      options: {
+        scales: {
+          xAxes: [{
+            type: 'linear',
+            position: 'bottom'
+          }]
+        }
+      }
     });
   }
   </script>
