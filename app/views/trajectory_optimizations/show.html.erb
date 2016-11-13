@@ -31,14 +31,14 @@
 </div>
 <div class="divider"></div>
 <div class="columns">
-  <div class="column col-12" style="padding:15px;padding-bottom:0px;">
-    <h4><a id="states" href="#states" style="text-decoration:none;">TrajectoryOptimization.states_list</a></h4>
-  </div>
-</div>
-<div class="columns">
-  <div class="column col-12" style="padding:15px;padding-top:0px;">
+  <div class="column col-12" style="padding:15px;">
+    <h4><a id="states_list" href="#states_list" style="text-decoration:none;">TrajectoryOptimization.states_list</a></h4>
     <span>States of world reference trajectory in JSON.</span>
     <span><strong>Must be formatted in JSON. Rotations in degree, divided by 10 for representation.</strong></span>
+    <h6>Chart</h6>
+    <div style="padding:10px;">
+      <%= render partial: "layouts/chart_multiple", locals: { title: "states", data: @optimization.states_list, keys: ["x", "y", "z", "r"] } %>
+    </div>
     <h6>Raw Data</h6>
     <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.states_list)) -%></pre>
   </div>
@@ -46,13 +46,13 @@
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;padding-bottom:0px;">
-    <h4><a id="states" href="#states" style="text-decoration:none;">TrajectoryOptimization.commands_list</a></h4>
-  </div>
-</div>
-<div class="columns">
-  <div class="column col-12" style="padding:15px;padding-top:0px;">
+    <h4><a id="commands_list" href="#commands_list" style="text-decoration:none;">TrajectoryOptimization.commands_list</a></h4>
     <span>Actual commands for drone with repect to drone's body coordinate in JSON.</span>
     <span><strong>Must be formatted in JSON</strong></span>
+    <h6>Chart</h6>
+    <div style="padding:10px;">
+      <%= render partial: "layouts/chart_multiple", locals: { title: "commands", data: @optimization.commands_list, keys: ["roll", "pitch", "throttle", "yaw"] } %>
+    </div>
     <h6>Raw Data</h6>
     <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.commands_list)) -%></pre>
   </div>
@@ -60,13 +60,13 @@
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;padding-bottom:0px;">
-    <h4><a id="states" href="#states" style="text-decoration:none;">TrajectoryOptimization.simulator_log_list</a></h4>
-  </div>
-</div>
-<div class="columns">
-  <div class="column col-12" style="padding:15px;padding-top:0px;">
+    <h4><a id="simulator_log_list" href="#simulator_log_list" style="text-decoration:none;">TrajectoryOptimization.simulator_log_list</a></h4>
     <span>Simulator Log from client.</span>
     <span><strong>Must be formatted in JSON</strong></span>
+    <h6>Chart</h6>
+    <div style="padding:10px;">
+      <%= render partial: "layouts/chart_multiple", locals: { title: "simulator_log", data: @optimization.simulator_log_list, keys: ["positionX", "positionY", "positionZ", "yaw", "pitch", "roll"], time_param: "time" } %>
+    </div>
     <h6>Raw Data</h6>
     <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.simulator_log_list)) -%></pre>
   </div>

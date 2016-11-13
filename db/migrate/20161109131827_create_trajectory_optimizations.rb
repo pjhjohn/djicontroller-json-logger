@@ -8,6 +8,7 @@ class CreateTrajectoryOptimizations < ActiveRecord::Migration
       t.string :simulator_log_list,       :default => [].to_json
       t.integer :max_iteration_count,     :default => 10
       t.integer :current_iteration_index, :default => 0
+
       t.timestamps null: false
     end
   end

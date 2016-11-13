@@ -32,7 +32,7 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization.simulator_log_list = JSON.parse(@optimization.simulator_log_list).push(params[:events]).to_json
 
     # Instantiate data for current iteration
-    timestep  = @optimization.episode_timestep
+    timestep  = @optimization.episode.timestep
     current   = @optimization.current_iteration_index
     max       = @optimization.max_iteration_count
     states_list         = JSON.parse(@optimization.states_list)
