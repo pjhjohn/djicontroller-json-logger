@@ -40,8 +40,8 @@
     <div style="padding:10px;">
       <%= render partial: "layouts/chart", locals: { title: "states", data: @episode.states, keys: ["x", "y", "z", "r"] } %>
     </div>
-    <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.states)) -%></pre>
+    <h6 data-id="states_code" class="copy">Raw Data</h6>
+    <pre id="states_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.states)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -61,8 +61,8 @@
     <div style="padding:10px;">
       <%= render partial: "layouts/chart", locals: { title: "diff_states", data: @episode.diff_states, keys: ["dx", "dy", "dz", "w"] } %>
     </div>
-    <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.diff_states)) -%></pre>
+    <h6 data-id="diff_states_code" class="copy">Raw Data</h6>
+    <pre id="diff_states_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.diff_states)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -75,8 +75,8 @@
     <div style="padding:10px;">
       <%= render partial: "layouts/chart", locals: { title: "commands", data: @episode.commands, keys: ["roll", "pitch", "throttle", "yaw"] } %>
     </div>
-    <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.commands)) -%></pre>
+    <h6 data-id="commands_code" class="copy">Raw Data</h6>
+    <pre id="commands_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.commands)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -85,8 +85,8 @@
     <h4><a id="simulator_logs" href="#simulator_logs" style="text-decoration:none;">Episode.simulator_logs</a></h4>
     <span>Simulator Log from the dji flight controller simulator in android.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.simulator_logs)) -%></pre>
+    <h6 data-id="simulator_logs_code" class="copy">Raw Data</h6>
+    <pre id="simulator_logs_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.simulator_logs)) -%></pre>
   </div>
 </div>
 <script typt="text/javascript">
@@ -97,3 +97,28 @@
     block.onmouseout = () => block.style.height = '84px';
   }
 </script>
+<script>
+  var copyToClipboard = (event) => {
+    var target = document.querySelector('#' + event.target.dataset.id);
+    var range = document.createRange();
+    range.selectNode(target);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    try {
+      var successful = document.execCommand('copy');
+      console.log(successful? 'Successfully copied to clipboard' : 'Copy to clipboard failed');
+    } catch(err) {
+      alert('Could not copy to clipboard');
+    }
+  }
+  document.querySelectorAll('.copy').forEach(button => button.addEventListener('click', copyToClipboard));
+</script>
+<style>
+  .copy {
+    color: #5764c6;
+    cursor: pointer;
+  }
+  .copy:hover {
+    color: #283176;
+  }
+</style>

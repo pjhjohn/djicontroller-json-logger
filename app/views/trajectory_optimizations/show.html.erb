@@ -39,8 +39,8 @@
     <div style="padding:10px;">
       <%= render partial: "layouts/chart_multiple", locals: { title: "states", data: @optimization.states_list, keys: ["x", "y", "z", "r"] } %>
     </div>
-    <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.states_list)) -%></pre>
+    <h6 data-id="states_list_code" class="copy">Raw Data</h6>
+    <pre id="states_list_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.states_list)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -53,8 +53,8 @@
     <div style="padding:10px;">
       <%= render partial: "layouts/chart_multiple", locals: { title: "commands", data: @optimization.commands_list, keys: ["roll", "pitch", "throttle", "yaw"] } %>
     </div>
-    <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.commands_list)) -%></pre>
+    <h6 data-id="commands_list_code" class="copy">Raw Data</h6>
+    <pre id="commands_list_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.commands_list)) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
@@ -67,8 +67,8 @@
     <div style="padding:10px;">
       <%= render partial: "layouts/chart_multiple", locals: { title: "simulator_log", data: @optimization.simulator_log_list, keys: ["positionX", "positionY", "positionZ", "yaw", "pitch", "roll"], time_param: "time" } %>
     </div>
-    <h6>Raw Data</h6>
-    <pre class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.simulator_log_list)) -%></pre>
+    <h6 data-id="simulator_log_list_code" class="copy">Raw Data</h6>
+    <pre id="simulator_log_list_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.simulator_log_list)) -%></pre>
   </div>
 </div>
 <script typt="text/javascript">
@@ -79,3 +79,28 @@
     block.onmouseout = () => block.style.height = '84px';
   }
 </script>
+<script>
+  var copyToClipboard = (event) => {
+    var target = document.querySelector('#' + event.target.dataset.id);
+    var range = document.createRange();
+    range.selectNode(target);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    try {
+      var successful = document.execCommand('copy');
+      console.log(successful? 'Successfully copied to clipboard' : 'Copy to clipboard failed');
+    } catch(err) {
+      alert('Could not copy to clipboard');
+    }
+  }
+  document.querySelectorAll('.copy').forEach(button => button.addEventListener('click', copyToClipboard));
+</script>
+<style>
+  .copy {
+    color: #5764c6;
+    cursor: pointer;
+  }
+  .copy:hover {
+    color: #283176;
+  }
+</style>
