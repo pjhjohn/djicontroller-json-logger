@@ -36,10 +36,7 @@
   <div class="column col-12" style="padding:15px;padding-top:0px;">
     <span>World referenced states in JSON, applying timestep.</span>
     <span><strong>Must be formatted in JSON. Rotations in degree, divided by 10 for representation.</strong></span>
-    <h6>Chart</h6>
-    <div style="padding:10px;">
-      <%= render partial: "layouts/chart", locals: { title: "states", data: @episode.states, keys: ["x", "y", "z", "r"] } %>
-    </div>
+    <%= render partial: "layouts/chart", locals: { title: "states", data: @episode.states, keys: ["x", "y", "z", "r"] } %>
     <h6 data-id="states_code" class="copy">Raw Data</h6>
     <pre id="states_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.states)) -%></pre>
   </div>
@@ -57,10 +54,7 @@
   <div class="column col-12" style="padding:15px;padding-top:0px;">
     <span>Body referenced differential of states.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <h6>Chart</h6>
-    <div style="padding:10px;">
-      <%= render partial: "layouts/chart", locals: { title: "diff_states", data: @episode.diff_states, keys: ["dx", "dy", "dz", "w"] } %>
-    </div>
+    <%= render partial: "layouts/chart", locals: { title: "diff_states", data: @episode.diff_states, keys: ["dx", "dy", "dz", "w"] } %>
     <h6 data-id="diff_states_code" class="copy">Raw Data</h6>
     <pre id="diff_states_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.diff_states)) -%></pre>
   </div>
@@ -71,10 +65,7 @@
     <h4><a id="commands" href="#commands" style="text-decoration:none;">Episode.commands</a></h4>
     <span>Actual commands for drone with repect to drone's body coordinate in JSON.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <h6>Chart</h6>
-    <div style="padding:10px;">
-      <%= render partial: "layouts/chart", locals: { title: "commands", data: @episode.commands, keys: ["roll", "pitch", "throttle", "yaw"] } %>
-    </div>
+    <%= render partial: "layouts/chart", locals: { title: "commands", data: @episode.commands, keys: ["roll", "pitch", "throttle", "yaw"] } %>
     <h6 data-id="commands_code" class="copy">Raw Data</h6>
     <pre id="commands_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.commands)) -%></pre>
   </div>

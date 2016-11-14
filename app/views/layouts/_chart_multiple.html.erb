@@ -1,7 +1,9 @@
 <% time_param = "t" if local_assigns[:time_param].nil? %>
 <% if JSON.parse(data).empty? %>
+  <h6>Chart</h6>
   <h2>Empty Data</h2>
 <% else %>
+  <h6 id="<%= title %>_chart_header" class="chart-header">Chart</h6>
   <canvas id="<%= title %>_chart"></canvas>
   <script>
   {
@@ -10,6 +12,7 @@
     const keys = <%= raw keys %>;
     const listByKey = (datum, key) => datum.map(obj => obj[key]);
     const time_param = "<%= time_param %>";
+    let displayLegend = false;
     const labels = {
       positionX: "PositionX",
       positionY: "PositionY",
@@ -50,29 +53,59 @@
       type: 'line',
       data: {
         datasets: data.map((datum, index) => keys.map(key => ({
-            label: labels[key] + "_" + index,
-            fill: false,
-            borderColor: colors[key],
-            pointBorderColor: colors[key],
-            pointBackgroundColor: colors.white,
-            pointHoverBackgroundColor: colors[key],
-            pointHoverBorderColor: colors.white,
-            data: datum.map(obj => ({
-              x: obj[time_param],
-              y: obj[key] * ("rwyaw".includes(key) ? 0.1 : 1)
-            })),
-          }))
-        ).reduce((a, b) => a.concat(b))
+          label: labels[key] + "_" + index,
+          fill: false,
+          borderColor: colors[key],
+          pointBorderColor: colors[key],
+          pointBackgroundColor: colors.white,
+          pointHoverBackgroundColor: colors[key],
+          pointHoverBorderColor: colors.white,
+          data: datum.map(obj => ({
+            x: obj[time_param],
+            y: obj[key] * ("rwyaw".includes(key) ? 0.1 : 1)
+          })),
+        }))).reduce((a, b) => a.concat(b))
       },
       options: {
         scales: {
           xAxes: [{
             type: 'linear',
             position: 'bottom'
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero:true
+            }
           }]
+        },
+        // Legend
+        legend: {
+          display: displayLegend
+        },
+        // Panning & Zooming
+        pan: {
+          enabled: true,
+          mode: 'x',
+        },
+        zoom: {
+          enabled: true,
+          mode: 'x',
         }
       }
     });
+    document.querySelector('#<%= title %>_chart_header').addEventListener('click', (event) => {
+      <%= title %>Chart.config.options.legend.display = displayLegend = !displayLegend;
+      <%= title %>Chart.update();
+    });
   }
   </script>
+  <style>
+    .chart-header {
+      color: #5764c6;
+      cursor: pointer;
+    }
+    .chart-header:hover {
+      color: #283176;
+    }
+  </style>
 <% end %>

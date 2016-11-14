@@ -1,6 +1,8 @@
 <% if JSON.parse(data).empty? %>
+  <h6>Chart</h6>
   <h2>Empty Data</h2>
 <% else %>
+  <h6 id="<%= title %>_chart_header" class="chart-header">Chart</h6>
   <canvas id="<%= title %>_chart"></canvas>
   <script>
   {
@@ -8,6 +10,7 @@
     const listByKey = (key) => data.map(obj => obj[key]);
     const data = <%= raw data %>;
     const keys = <%= raw keys %>;
+    let displayLegend = true;
     const labels = {
       x: "PositionX",
       y: "PositionY",
@@ -53,7 +56,25 @@
           data: listByKey(key).map(val => val * ("rw".includes(key) ? 0.1 : 1)),
         }))
       },
+      options: {
+        legend: {
+          display: displayLegend
+        }
+      }
+    });
+    document.querySelector('#<%= title %>_chart_header').addEventListener('click', (event) => {
+      <%= title %>Chart.config.options.legend.display = displayLegend = !displayLegend;
+      <%= title %>Chart.update();
     });
   }
   </script>
+  <style>
+    .chart-header {
+      color: #5764c6;
+      cursor: pointer;
+    }
+    .chart-header:hover {
+      color: #283176;
+    }
+  </style>
 <% end %>
