@@ -16,20 +16,18 @@ class ApplicationController < ActionController::Base
       prev, curr, timestep_s = states[i-1], states[i], timestep / 1000.0
 
       # Position Coordinate : World -> Body
-      dx = (curr["x"] - prev["x"]) / timestep_s
-      dy = (curr["y"] - prev["y"]) / timestep_s
-      dz = (curr["z"] - prev["z"]) / timestep_s
-      v_body = Roto.rotate(
-        [dx, dy, dz],                                       # Point to rotate
-        (180 / Math::PI) * Math.atan2(dy, dx) - prev["r"],  # Rotation angle
-        [0, 0, 1]                                           # Rotation axis
-      )
+      vCurr = Geo3d::Vector.new curr["x"],curr["y"],curr["z"]
+      vPrev = Geo3d::Vector.new prev["x"],prev["y"],prev["z"]
+      vDiff = (vCurr - vPrev) / timestep_s
+
+      mRotationZ = Geo3d::Matrix.rotation_z (Math.atan2(vDiff.y, vDiff.x) - (Math::PI / 180) * prev["r"])
+      vBody = mRotationZ * vDiff
 
       {
         :t  => prev["t"],
-        :dx => clip(v_body[0],                             15.0), # Will convert into Roll
-        :dy => clip(v_body[1],                             15.0), # Will convert into Pitch
-        :dz => clip(v_body[2],                              4.0), # Will convert into Throttle
+        :dx => clip(vBody.x,                               15.0), # Will convert into Roll
+        :dy => clip(vBody.y,                               15.0), # Will convert into Pitch
+        :dz => clip(vBody.z,                                4.0), # Will convert into Throttle
         :w  => clip((curr["r"] - prev["r"]) / timestep_s, 100.0), # Will convert into Yaw
       }
     end
