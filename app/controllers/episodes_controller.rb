@@ -97,6 +97,15 @@ class EpisodesController < ApplicationController
     end
   end
 
+  def render3d
+    @episode = Episode.find(params[:id])
+
+    respond_to do |format|
+      format.html # render.html.erb
+      format.json { render json: serialize_episode(@episode) }
+    end
+  end
+
   ## Actions for Episode Data Update ##
   def update_diff_states
     @episode = Episode.find(params[:id])

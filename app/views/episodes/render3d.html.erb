@@ -1,0 +1,121 @@
+<div class="columns">
+  <div class="column col-7" style="padding:15px;">
+    <h3>
+      <a href="/episodes" class="btn btn-link zmdi zmdi-chevron-left" style="padding:0px;"></a>
+      Episode#<%=@episode.id%>. <%= @episode.name %>
+    </h3>
+  </div>
+  <div class="column col-5" style="margin-top:30px;padding:15px;">
+    <a href="/episodes/<%=@episode.id%>/destroy" class="btn btn-block">Delete This Episode</a>
+  </div>
+</div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <a href="/episodes/<%=@episode.id%>/duplicate" class="btn btn-block">Duplicate This Episode</a>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+  <div class="column col-7" style="padding:15px;padding-bottom:0px;">
+    <h4><a id="timestep" href="#timestep" style="text-decoration:none;">Episode.timestep</a></h4>
+  </div>
+  <div class="column col-5" style="margin-top:20px;padding:15px;">
+    <a href="/episodes/<%=@episode.id%>.json" download="Episode#<%=@episode.id%>-<%=@episode.name%>.json" class="btn btn-block">Download This Episode</a>
+  </div>
+</div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <span>Time interval between drone commands : </span>
+    <span><strong><%= @episode.timestep %>ms</strong></span>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+  <div class="column col-7" style="padding:15px;padding-bottom:0px;">
+    <h4><a id="states" href="#states" style="text-decoration:none;">Episode.states</a></h4>
+  </div>
+  <div class="column col-5" style="margin-top:20px;padding:15px;">
+    <a href="/episodes/<%=@episode.id%>/update_diff_states" class="btn btn-block">Update Episode.diff_states</a>
+  </div>
+</div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;padding-top:0px;">
+    <span>World referenced states in JSON, applying timestep.</span>
+    <span><strong>Must be formatted in JSON. Rotations in degree, divided by 10 for representation.</strong></span>
+    <%= render partial: "layouts/viewer_3d", locals: { title: "states", data: @episode.states, keys: ["x", "y", "z", "r"] } %>
+    <h6 data-id="states_code" class="copy">Raw Data</h6>
+    <pre id="states_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.states)) -%></pre>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+  <div class="column col-7" style="padding:15px;padding-bottom:0px;">
+    <h4><a id="diff_states" href="#diff_states" style="text-decoration:none;">Episode.diff_states</a></h4>
+  </div>
+  <div class="column col-5" style="margin-top:20px;padding:15px;">
+    <a href="/episodes/<%=@episode.id%>/update_commands" class="btn btn-block">Update Episode.commands</a>
+  </div>
+</div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;padding-top:0px;">
+    <span>Body referenced differential of states.</span>
+    <span><strong>Must be formatted in JSON</strong></span>
+    <%= render partial: "layouts/viewer_3d", locals: { title: "diff_states", data: @episode.diff_states, keys: ["dx", "dy", "dz", "w"] } %>
+    <h6 data-id="diff_states_code" class="copy">Raw Data</h6>
+    <pre id="diff_states_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.diff_states)) -%></pre>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <h4><a id="commands" href="#commands" style="text-decoration:none;">Episode.commands</a></h4>
+    <span>Actual commands for drone with repect to drone's body coordinate in JSON.</span>
+    <span><strong>Must be formatted in JSON</strong></span>
+    <%= render partial: "layouts/viewer_3d", locals: { title: "commands", data: @episode.commands, keys: ["roll", "pitch", "throttle", "yaw"] } %>
+    <h6 data-id="commands_code" class="copy">Raw Data</h6>
+    <pre id="commands_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.commands)) -%></pre>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;">
+    <h4><a id="simulator_logs" href="#simulator_logs" style="text-decoration:none;">Episode.simulator_logs</a></h4>
+    <span>Simulator Log from the dji flight controller simulator in android.</span>
+    <span><strong>Must be formatted in JSON</strong></span>
+    <h6 data-id="simulator_logs_code" class="copy">Raw Data</h6>
+    <pre id="simulator_logs_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.simulator_logs)) -%></pre>
+  </div>
+</div>
+<script typt="text/javascript">
+  const codeBlocks = document.getElementsByTagName("pre");
+  for (let i = 0; i < codeBlocks.length; i++) {
+    const block = codeBlocks[i];
+    block.onmouseover = () => block.style.height = 'auto';
+    block.onmouseout = () => block.style.height = '84px';
+  }
+</script>
+<script>
+  var copyToClipboard = (event) => {
+    var target = document.querySelector('#' + event.target.dataset.id);
+    var range = document.createRange();
+    range.selectNode(target);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    try {
+      var successful = document.execCommand('copy');
+      console.log(successful? 'Successfully copied to clipboard' : 'Copy to clipboard failed');
+    } catch(err) {
+      alert('Could not copy to clipboard');
+    }
+  }
+  document.querySelectorAll('.copy').forEach(button => button.addEventListener('click', copyToClipboard));
+</script>
+<style>
+  .copy {
+    color: #5764c6;
+    cursor: pointer;
+  }
+  .copy:hover {
+    color: #283176;
+  }
+</style>
