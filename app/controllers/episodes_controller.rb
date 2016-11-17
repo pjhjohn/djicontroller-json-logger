@@ -82,6 +82,21 @@ class EpisodesController < ApplicationController
     end
   end
 
+  def duplicate
+    @episode = Episode.find(params[:id]).dup
+
+    respond_to do |format|
+      if @episode.save
+        flash[:notice] = 'Episode was successfully duplicated.'
+        format.html { redirect_to(@episode) }
+        format.json { render json: serialize_episode(@episode), status: :created, location: @episode }
+      else
+        format.html { render action: 'new' }
+        format.json { render json: @episode.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   ## Actions for Episode Data Update ##
   def update_diff_states
     @episode = Episode.find(params[:id])

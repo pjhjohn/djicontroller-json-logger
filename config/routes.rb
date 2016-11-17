@@ -12,6 +12,8 @@ Rails.application.routes.draw do
   resources :trajectory_optimizations, constraints: { id: /[0-9]+/ }
 
   # Additional Update Routes
+
+  get  '/episodes/:id/duplicate'            => 'episodes#duplicate'            , constraints: { id: /[0-9]+/ }
   get  '/episodes/:id/update_states'        => 'episodes#update_states'        , constraints: { id: /[0-9]+/ }
   get  '/episodes/:id/update_diff_states'   => 'episodes#update_diff_states'   , constraints: { id: /[0-9]+/ }
   get  '/episodes/:id/update_commands'      => 'episodes#update_commands'      , constraints: { id: /[0-9]+/ }
