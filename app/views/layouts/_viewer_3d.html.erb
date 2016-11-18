@@ -8,8 +8,11 @@
   {
     // Data
     const data = <%= raw data %>;
+    const geom = new THREE.Geometry();
+    data.map(datum => geom.vertices.push(new THREE.Vector3(datum.x, datum.y, datum.z)));
 
-    // Canvas, Renderer and its Viewport
+    // Time, Canvas, Renderer and its Viewport
+    const clock = new THREE.Clock();
     const canvas = document.getElementById('<%= title %>_3d_viewer');
     const renderer = new THREE.WebGLRenderer({canvas: canvas});
     canvas.width  = canvas.clientWidth;
@@ -19,20 +22,29 @@
     // ThreeJS Scene & Camera
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 0.1, 1000);
-    camera.position.z = 3;
+    camera.position.x = 2;
+    camera.position.y = 2;
+    camera.position.z = 2;
 
-    // Grid Helper
-    const helper = new THREE.GridHelper( 200, 10 );
-    helper.setColors( 0x0000ff, 0x808080 ); // blue central line, gray grid
-    helper.position.y = - 150;
-    scene.add( helper );
+    // Camera Controls
+    const cameraControls = new THREE.TrackballControls(camera, renderer.domElement);
+    cameraControls.target.set(0, 0, 0);
 
-    // Trajectory Line
-    const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
-    const points = new THREE.Geometry();
-    data.map(datum => points.vertices.push(new THREE.Vector3(datum.x, datum.y, datum.z)));
-    const trajectory = new THREE.Line(points, material);
+    // Grid & Axis
+    const gridHelper = new THREE.GridHelper(5, 10);
+    scene.add(gridHelper);
+    const axisHelper = new THREE.AxisHelper(2);
+    scene.add(axisHelper);
+
+    // Trajectory
+    const mLine = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 3});
+    const trajectory = new THREE.Line(geom, mLine);
     scene.add(trajectory);
+
+    // Points
+    const mPoints = new THREE.PointsMaterial({ color: 0x777777, size: 5, sizeAttenuation: false });
+    const points = new THREE.Points(geom, mPoints);
+    scene.add(points);
 
     // Lighting
     const light = new THREE.DirectionalLight(0xffffff, 0.55);
@@ -41,7 +53,10 @@
 
     // Render Main Loop
     const render = function () {
-      requestAnimationFrame( render );
+      const delta = clock.getDelta();
+
+      requestAnimationFrame(render);
+      cameraControls.update(delta);
       renderer.render(scene, camera);
     };
     render();
