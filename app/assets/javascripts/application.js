@@ -13,3 +13,12 @@
 //= require jquery
 //= require jquery_ujs
 //= require_tree .
+
+// Angle Conversion Helper
+Math.radians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+
+Math.degrees = function(radians) {
+  return radians * 180 / Math.PI;
+};

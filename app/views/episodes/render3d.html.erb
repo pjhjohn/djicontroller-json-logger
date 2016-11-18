@@ -6,11 +6,39 @@
     {
       let clock, canvas, renderer;
       let scene, camera, cameraControls, timelineController;
+
+      const serializeTimelineData = function(states) {
+        console.log(states[states.length - 1]);
+        const dronePosition = {
+          times: states.map(state => state.t / 1000.0),
+          values: states.map(state => [state.x, state.y, state.z]).reduce((a, b) => a.concat(b)),
+        };
+        const droneQuaternion = {
+          times: states.map(state => state.t / 1000.0),
+          values: states.map(state => {
+            const mat = new THREE.Matrix4();
+            mat.makeRotationX(Math.radians(state.rx));
+            mat.makeRotationY(Math.radians(state.ry));
+            mat.makeRotationZ(Math.radians(state.rz));
+            const quaternion = new THREE.Quaternion();
+            quaternion.setFromRotationMatrix(mat);
+            return [quaternion.x, quaternion.y, quaternion.z, quaternion.w]
+          }).reduce((a, b) => a.concat(b)),
+        };
+        return {
+          duration: states[states.length - 1].t / 1000.0,
+          channels: {
+            "drone.position": dronePosition,
+            "drone.quaternion": droneQuaternion,
+          }
+        };
+      };
+
       const init = function() {
         // Data
-        const data = <%= raw @episode.states %>;
-        const dataGeom = new THREE.Geometry();
-        data.map(datum => dataGeom.vertices.push(new THREE.Vector3(datum.x, datum.y, datum.z)));
+        const states = <%= raw @episode.states %>;
+        const statesGeom = new THREE.Geometry();
+        states.map(state => statesGeom.vertices.push(new THREE.Vector3(state.x, state.y, state.z)));
 
         // Time, Canvas, Renderer and its Viewport
         clock = new THREE.Clock();
@@ -24,6 +52,7 @@
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 0.1, 1000);
         camera.position.set(2, 2, 2);
+        camera.lookAt(new THREE.Vector3(1,1,0));
 
         // Camera Controls
         cameraControls = new THREE.TrackballControls(camera, renderer.domElement);
@@ -36,13 +65,13 @@
         scene.add(axisHelper);
 
         // Trajectory
-        const mLine = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 3});
-        const trajectory = new THREE.Line(dataGeom, mLine);
+        const mLine = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 1});
+        const trajectory = new THREE.Line(statesGeom, mLine);
         scene.add(trajectory);
 
         // Points
-        const mPoints = new THREE.PointsMaterial({ color: 0x777777, size: 5, sizeAttenuation: false });
-        const points = new THREE.Points(dataGeom, mPoints);
+        const mPoints = new THREE.PointsMaterial({ color: 0x888888, size: 3, sizeAttenuation: false });
+        const points = new THREE.Points(statesGeom, mPoints);
         scene.add(points);
 
         // Lighting
@@ -85,7 +114,7 @@
         ];
         timelineController = new THREE.TimelinerController(scene, tracks, render);
         new Timeliner(timelineController);
-        timelineController.deserialize({"duration":20,"channels":{"drone.position":{"times":[5,15,25],"values":[0,0,0,3.0,0.0,0.0,3.0,3.0,0.0]},"drone.quaternion":{"times":[2.5,12.5],"values":[0,0,0,1,1,0,0,0]}}});
+        timelineController.deserialize(serializeTimelineData(states));
       };
 
       // Render Main Loop
