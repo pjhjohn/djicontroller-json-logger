@@ -1,9 +1,7 @@
 <% if JSON.parse(data).empty? %>
-  <h6>3D Render</h6>
-  <h2>Empty Data</h2>
+  <h1>Empty Data</h1>
 <% else %>
-  <h6 id="<%= title %>_3d_viewer_header">3D Render</h6>
-  <canvas id="<%= title %>_3d_viewer" style="width:100%;height:600px;"></canvas>
+  <canvas id="<%= title %>_3d_viewer" style="width:100%;height:100%;position:absolute;"></canvas>
   <script>
   {
     let clock, canvas, renderer;
