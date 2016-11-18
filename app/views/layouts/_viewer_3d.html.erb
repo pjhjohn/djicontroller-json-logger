@@ -5,7 +5,7 @@
   <script>
   {
     let clock, canvas, renderer;
-    let scene, camera, cameraControls;
+    let scene, camera, cameraControls, timelineController;
     const init = function() {
       // Data
       const data = <%= raw data %>;
@@ -83,7 +83,9 @@
 
         }
       ];
-      new Timeliner(new THREE.TimelinerController(scene, tracks, render));
+      timelineController = new THREE.TimelinerController(scene, tracks, render);
+      new Timeliner(timelineController);
+      timelineController.deserialize({"duration":20,"channels":{"drone.position":{"times":[5,15,25],"values":[0,0,0,3.0,0.0,0.0,3.0,3.0,0.0]},"drone.quaternion":{"times":[2.5,12.5],"values":[0,0,0,1,1,0,0,0]}}})
     };
 
     // Render Main Loop
