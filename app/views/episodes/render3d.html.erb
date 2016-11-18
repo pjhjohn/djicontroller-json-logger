@@ -81,17 +81,23 @@
 
         // Drone Geometry for Animation
         const droneGeom = new THREE.Geometry();
-        const droneMaterial = new THREE.MeshBasicMaterial({ color: 0x02c002, side: THREE.DoubleSide });
+        const droneMaterial = new THREE.MeshBasicMaterial({ color: 0x02c002, side: THREE.DoubleSide, vertexColors: THREE.FaceColors });
         droneGeom.vertices.push(
           new THREE.Vector3( 0.2, 0.0, 0.0),
           new THREE.Vector3(-0.1, 0.0, 0.1),
           new THREE.Vector3( 0.0, 0.0, 0.0),
-          new THREE.Vector3(-0.1, 0.0,-0.1)
+          new THREE.Vector3(-0.1, 0.0,-0.1),
+          new THREE.Vector3( 0.0,0.05, 0.0)
         );
         droneGeom.faces.push(
           new THREE.Face3(0, 1, 2),
-          new THREE.Face3(2, 3, 0)
+          new THREE.Face3(2, 3, 0),
+          new THREE.Face3(4, 0, 1),
+          new THREE.Face3(4, 1, 2),
+          new THREE.Face3(4, 2, 3),
+          new THREE.Face3(4, 3, 0)
         );
+        droneGeom.faces.map(face => face.color.setRGB(Math.random(), Math.random(), Math.random()));
         const drone = new THREE.Mesh(droneGeom, droneMaterial);
         drone.name = "drone";
         scene.add(drone);
