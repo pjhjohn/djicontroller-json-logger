@@ -2,6 +2,7 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+$spectre-core-color: #5764c6;
 $danger-color: #c65764;
 $danger-light-color: #fff;
 .btn {
@@ -31,6 +32,23 @@ $danger-light-color: #fff;
         border-right-color: transparent;
         border-top-color: transparent;
       }
+    }
+  }
+  &.btn-light {
+    background: transparent;
+    border-color: transparent;
+    color: $spectre-core-color;
+    &:focus,
+    &:hover {
+      background: transparent;
+      border-color: transparent;
+      color: lighten($spectre-core-color, 40%);
+    }
+    &:active,
+    &.active {
+      background: transparent;
+      border-color: transparent;
+      color: lighten($spectre-core-color, 20%);
     }
   }
 }

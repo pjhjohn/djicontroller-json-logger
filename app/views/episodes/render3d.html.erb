@@ -2,13 +2,16 @@
   <h1>Empty Data</h1>
 <% else %>
   <canvas id="3d_episode_renderer" style="width:100%;height:100%;position:absolute;"></canvas>
+  <div style="position:absolute;left:5px;top:5px;">
+    <a href="/" class="btn btn-light">Home</a>
+    <a href="/episodes/<%= @episode.id %>" class="btn btn-light">Episode</a>
+  </div>
   <script>
     {
       let clock, canvas, renderer;
       let scene, camera, cameraControls, timelineController;
 
       const serializeTimelineData = function(states) {
-        console.log(states[states.length - 1]);
         const dronePosition = {
           times: states.map(state => state.t / 1000.0),
           values: states.map(state => [state.x, state.y, state.z]).reduce((a, b) => a.concat(b)),
