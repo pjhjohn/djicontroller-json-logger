@@ -8,7 +8,9 @@
   <script>
   {
     const ctx = document.getElementById('<%= title %>_chart').getContext('2d');
+    //noinspection JSAnnotator
     const data = <%= raw data %>;
+    //noinspection JSAnnotator
     const keys = <%= raw keys %>;
     const listByKey = (datum, key) => datum.map(obj => obj[key]);
     const time_param = "<%= time_param %>";

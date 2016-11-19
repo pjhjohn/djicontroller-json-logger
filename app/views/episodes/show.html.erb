@@ -42,7 +42,7 @@
   <div class="column col-12" style="padding:15px;padding-top:0px;">
     <span>World referenced states in JSON, applying timestep.</span>
     <span><strong>Must be formatted in JSON. Rotations in degree, divided by 10 for representation.</strong></span>
-    <%= render partial: "layouts/chart", locals: { title: "states", data: @episode.states, keys: ["x", "y", "z", "r"] } %>
+    <%= render partial: "layouts/chart", locals: { title: "states", data: @episode.states, keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
     <h6 data-id="states_code" class="copy">Raw Data</h6>
     <pre id="states_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.states)) -%></pre>
   </div>

@@ -39,6 +39,7 @@
 
       const init = function() {
         // Data
+        //noinspection JSAnnotator
         const states = <%= raw @episode.states %>;
         const statesGeom = new THREE.Geometry();
         states.map(state => statesGeom.vertices.push(new THREE.Vector3(state.x, state.y, state.z)));

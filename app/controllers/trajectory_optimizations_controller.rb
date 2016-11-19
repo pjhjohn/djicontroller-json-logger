@@ -4,7 +4,7 @@ class TrajectoryOptimizationsController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @optimizations.map{|optimization| serialize_trajectory_optimization(optimization)} }
+      format.json { render json: @optimizations.map{|optimization| serialize_optimization(optimization)} }
     end
   end
 
@@ -13,7 +13,7 @@ class TrajectoryOptimizationsController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: serialize_trajectory_optimization(@optimization) }
+      format.json { render json: serialize_optimization(@optimization) }
     end
   end
 

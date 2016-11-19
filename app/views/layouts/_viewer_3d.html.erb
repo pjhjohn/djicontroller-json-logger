@@ -8,6 +8,7 @@
     let scene, camera, cameraControls, timelineController;
     const init = function() {
       // Data
+      //noinspection JSAnnotator
       const data = <%= raw data %>;
       const dataGeom = new THREE.Geometry();
       data.map(datum => dataGeom.vertices.push(new THREE.Vector3(datum.x, datum.y, datum.z)));
