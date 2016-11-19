@@ -27,13 +27,20 @@ class ApplicationController < ActionController::Base
       next_mat *= Geo3d::Matrix.rotation_z next_state["rz"].degrees
 
       local_velocity = curr_mat.inverse * (next_pos - curr_pos) / timestep_in_sec
+      rotation_diff = curr_mat.inverse * next_mat
+      global_x_axis = Geo3d::Vector.new 1, 0, 0
+      diff_x_axis = rotation_diff * global_x_axis
+      yaw_diff = Math.acos(diff_x_axis.normalize.dot global_x_axis)
+      if diff_x_axis.y < 0
+        yaw_diff = -yaw_diff
+      end
 
       {
         :t  => curr_state["t"],
         :dx => clip(local_velocity.x, 15.0), # Will convert into Roll
         :dy => clip(local_velocity.y, 15.0), # Will convert into Pitch
         :dz => clip(local_velocity.z,  4.0), # Will convert into Throttle
-        :w  => clip((next_state["rz"] - curr_state["rz"]) / timestep_in_sec, 100.0), # Will convert into Yaw
+        :w  => clip(yaw_diff.to_degrees / timestep_in_sec, 100.0), # Will convert into Yaw
       }
     end
   end
