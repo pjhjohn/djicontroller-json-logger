@@ -20,9 +20,9 @@
           times: states.map(state => state.t / 1000.0),
           values: states.map(state => {
             const mat = new THREE.Matrix4();
-            mat.makeRotationX(Math.radians(state.rx));
-            mat.makeRotationY(Math.radians(state.ry));
-            mat.makeRotationZ(Math.radians(state.rz));
+            mat.multiply(new THREE.Matrix4().makeRotationX(Math.radians(state.rx)));
+            mat.multiply(new THREE.Matrix4().makeRotationY(Math.radians(state.ry)));
+            mat.multiply(new THREE.Matrix4().makeRotationZ(Math.radians(state.rz)));
             const quaternion = new THREE.Quaternion();
             quaternion.setFromRotationMatrix(mat);
             return [quaternion.x, quaternion.y, quaternion.z, quaternion.w]
