@@ -1,0 +1,36 @@
+// Place all the styles related to the episodes controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+$danger-color: #c65764;
+$danger-light-color: #fff;
+.btn {
+  &.btn-danger {
+    background: $danger-light-color;
+    border-color: darken($danger-color, 5%);
+    color: $danger-color;
+    &:focus {
+      background: darken($danger-color, 4%);
+      border-color: darken($danger-color, 10%);
+      color: $danger-light-color;
+    }
+    &:hover {
+      background: darken($danger-color, 6%);
+      border-color: darken($danger-color, 15%);
+      color: $danger-light-color;
+    }
+    &:active,
+    &.active {
+      background: darken($danger-color, 8%);
+      border-color: darken($danger-color, 15%);
+      color: $danger-light-color;
+    }
+    &.loading {
+      &::after {
+        border-color: $danger-light-color;
+        border-right-color: transparent;
+        border-top-color: transparent;
+      }
+    }
+  }
+}

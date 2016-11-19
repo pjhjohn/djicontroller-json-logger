@@ -13,30 +13,3 @@
  *= require_tree .
  *= require_self
  */
-
-.btn.btn-danger {
-    background: #fff;
-    border-color: #E53935;
-    color: #EF5350;
-}
-.btn.btn-danger:focus {
-    background: #F44336;
-    border-color: #D32F2F;
-    color: #fff;
-}
-.btn.btn-danger:hover {
-    background: #E53935;
-    border-color: #C62828;
-    color: #fff;
-}
-.btn.btn-danger:active,
-.btn.btn-danger.active {
-    background: #D32F2F;
-    border-color: #B71C1C;
-    color: #fff;
-}
-.btn.btn-danger.loading::after {
-    border-color: #fff;
-    border-right-color: transparent;
-    border-top-color: transparent;
-}
