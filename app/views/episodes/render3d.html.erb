@@ -11,6 +11,14 @@
       let clock, canvas, renderer;
       let scene, camera, cameraControls, timelineController;
 
+      const getRotationMatrixFromState = function(state) {
+        const mat = new THREE.Matrix4();
+        mat.multiply(new THREE.Matrix4().makeRotationX(Math.radians(state.rx)));
+        mat.multiply(new THREE.Matrix4().makeRotationY(Math.radians(state.ry)));
+        mat.multiply(new THREE.Matrix4().makeRotationZ(Math.radians(state.rz)));
+        return mat;
+      };
+
       const serializeTimelineData = function(states) {
         const dronePosition = {
           times: states.map(state => state.t / 1000.0),
@@ -19,12 +27,8 @@
         const droneQuaternion = {
           times: states.map(state => state.t / 1000.0),
           values: states.map(state => {
-            const mat = new THREE.Matrix4();
-            mat.multiply(new THREE.Matrix4().makeRotationX(Math.radians(state.rx)));
-            mat.multiply(new THREE.Matrix4().makeRotationY(Math.radians(state.ry)));
-            mat.multiply(new THREE.Matrix4().makeRotationZ(Math.radians(state.rz)));
             const quaternion = new THREE.Quaternion();
-            quaternion.setFromRotationMatrix(mat);
+            quaternion.setFromRotationMatrix(getRotationMatrixFromState(state));
             return [quaternion.x, quaternion.y, quaternion.z, quaternion.w]
           }).reduce((a, b) => a.concat(b)),
         };
@@ -70,15 +74,23 @@
         const axisHelper = new THREE.AxisHelper(2);
         scene.add(axisHelper);
 
-        // Trajectory
+        // State Visualization : Trajectory
         const mLine = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 1});
         const trajectory = new THREE.Line(statesGeom, mLine);
         scene.add(trajectory);
 
-        // Points
+        // State Visualization : Points
         const mPoints = new THREE.PointsMaterial({ color: 0x888888, size: 3, sizeAttenuation: false });
         const points = new THREE.Points(statesGeom, mPoints);
         scene.add(points);
+
+        // State Visualization : Orientation
+        states.map(state => scene.add(new THREE.ArrowHelper(
+          new THREE.Vector3(1, 0, 0).applyMatrix4(getRotationMatrixFromState(state)),
+          new THREE.Vector3(state.x, state.y, state.z),
+          0.5,
+          0xff8888
+        )));
 
         // Lighting
         const light = new THREE.DirectionalLight(0xffffff, 0.55);
@@ -121,7 +133,6 @@
             propertyPath: 'drone.quaternion',
             initialValue: [ 0, 0, 0, 1 ],
             interpolation: THREE.InterpolateLinear
-
           }
         ];
         timelineController = new THREE.TimelinerController(scene, tracks, render);
