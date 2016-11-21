@@ -20,7 +20,7 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization.save
 
     # Construct Feedback Object & Return with JSON format
-    render :json => build_trajectory_optimization_feedback(@optimization)
+    render :json => build_optimization_feedback(@optimization)
   end
 
   # params[:id] is TrajectoryOptimization ID
@@ -32,51 +32,64 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization.simulator_log_list = JSON.parse(@optimization.simulator_log_list).push(params[:events]).to_json
 
     # Instantiate data for current iteration
-    timestep  = @optimization.episode.timestep
-    current   = @optimization.current_iteration_index
-    max       = @optimization.max_iteration_count
+    timestep            = @optimization.episode.timestep
+    current             = @optimization.current_iteration_index
+    max                 = @optimization.max_iteration_count
     states_list         = JSON.parse(@optimization.states_list)
     commands_list       = JSON.parse(@optimization.commands_list)
     simulator_log_list  = JSON.parse(@optimization.simulator_log_list)
 
     # Calculate difference factor from current states & simulator_log
-    error = error_against_reference(states_list[current], simulator_log_list)
+    distances = get_distances(states_list[current], simulator_log_list[current])
 
     # Calculate update difference of current states
-    diff_states = diff_states_to_update(states_list[current], error)
+    delta_states = get_delta_states_to_update(states_list[current], distances)
 
     # Next Iteration : update states & commands
     if current < max - 1
-      @optimization.states_list = states_list.push(update_states(states_list[current], diff_states)).to_json # TODO : update from diff_states
+      @optimization.states_list = states_list.push(update_states(states_list[current], delta_states)).to_json # TODO : update from delta_states
       @optimization.commands_list = commands_list.push(states_to_commands(states_list[current], timestep)).to_json
     end
     @optimization.current_iteration_index = current + 1
     @optimization.save
 
     # Construct Feedback Object & Return with JSON format
-    render :json => build_trajectory_optimization_feedback(@optimization)
+    render :json => build_optimization_feedback(@optimization)
   end
 
-  def error_against_reference(states, simulator_log)
-    return nil # TODO : implement this
+  def get_distance(state1, state2)
+    0 # TODO : implement this
   end
 
-  def diff_states_to_update (states, error)
-    return nil # TODO : implement this
+  def get_distances(states, simulator_log)
+    # Assume states & simulator_log have same length & aligned
+    (1..states.length).map do |i|
+      get_distance(states[i], simulator_log[i])
+    end
   end
 
-  def update_states(states, diff_states)
-    return states # TODO : implement this
+  def error_score(states, simulator_log)
+    score = 0
+    get_distances(states, simulator_log).each { |distance| score += distance }
+    score
   end
 
-  def build_trajectory_optimization_feedback(optimization)
+  def get_delta_states_to_update(states, distances)
+    nil # TODO : implement this
+  end
+
+  def update_states(states, delta_states)
+    states # TODO : implement this
+  end
+
+  def build_optimization_feedback(optimization)
     current, max = optimization.current_iteration_index, optimization.max_iteration_count
-    return {
+    {
       :id => optimization.id,
       :current_iteration_index => current,
       :timestep => optimization.episode.timestep,
+      :commands => current >= max ? [] : JSON.parse(optimization.commands_list)[current], # Empty Commands considered as termination
       :success => true, # TODO : implement this
-      :commands => current >= max ? [] : JSON.parse(optimization.commands_list)[current],
       :error_message => "Error Message!!" # TODO : implement this
     }
   end
