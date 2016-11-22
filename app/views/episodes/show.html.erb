@@ -1,13 +1,4 @@
-<div class="columns">
-  <div class="column col-7" style="padding:15px;">
-    <h3>
-      Episode#<%=@episode.id%>. <%= @episode.name %>
-    </h3>
-  </div>
-  <div class="column col-5" style="margin-top:30px;padding:15px;">
-    <a href="/episodes/<%=@episode.id%>/destroy" class="btn btn-block btn-danger">Delete This Episode</a>
-  </div>
-</div>
+<%= render partial: "layouts/title", locals: { id: @episode.id, title: @episode.name, url: "/episodes/#{@episode.id}/destroy" } %>
 <div class="columns">
   <div class="column col-12" style="padding:15px;">
     <a href="/episodes/<%=@episode.id%>/duplicate" class="btn btn-block">Duplicate This Episode</a>

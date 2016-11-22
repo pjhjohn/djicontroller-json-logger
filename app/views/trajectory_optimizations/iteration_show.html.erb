@@ -1,13 +1,4 @@
-<div class="columns">
-  <div class="column col-7" style="padding:15px;">
-    <h3>
-      #<%=@optimization.id%>. <%= @optimization.episode.name %> iteration <%= @iteration_id %>
-    </h3>
-  </div>
-  <div class="column col-5" style="margin-top:30px;padding:15px;">
-    <a href="/trajectory_optimizations/<%=@optimization.id%>/destroy" class="btn btn-block btn-danger">Delete This Trajectory Optimization</a>
-  </div>
-</div>
+<%= render partial: "layouts/title", locals: { id: @optimization.id, title: @optimization.episode.name } %>
 <div class="columns">
   <div class="column col-7" style="padding:15px;padding-bottom:0px;">
     <h4><a id="inspect" href="#inspect" style="text-decoration:none;">Brief Inspection</a></h4>
