@@ -1,4 +1,4 @@
-<% if JSON.parse(data).empty? %>
+<% if data == "null" or JSON.parse(data).empty? %>
   <h6>Chart</h6>
   <h2>Empty Data</h2>
 <% else %>

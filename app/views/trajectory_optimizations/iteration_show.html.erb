@@ -1,8 +1,8 @@
 <div class="columns">
   <div class="column col-7" style="padding:15px;">
     <h3>
-      <a href="/trajectory_optimizations" class="btn btn-link zmdi zmdi-chevron-left" style="padding:0px;"></a>
-      #<%=@optimization.id%>. <%= @optimization.episode.name %>
+      <a href="/trajectory_optimizations/<%=@optimization.id%>" class="btn btn-link zmdi zmdi-chevron-left" style="padding:0px;"></a>
+      #<%=@optimization.id%>. <%= @optimization.episode.name %> iteration <%= @iteration_id %>
     </h3>
   </div>
   <div class="column col-5" style="margin-top:30px;padding:15px;">
@@ -14,7 +14,7 @@
     <h4><a id="inspect" href="#inspect" style="text-decoration:none;">Brief Inspection</a></h4>
   </div>
   <div class="column col-5" style="margin-top:20px;padding:15px;">
-    <a href="/trajectory_optimizations/<%=@optimization.id%>.json" download="optimization#<%=@optimization.id%>-<%=@optimization.episode.name%>.json" class="btn btn-block">Download This optimization</a>
+    <a href="/trajectory_optimizations/<%= @optimization.id %>/<%= @iteration_id %>/render" class="btn btn-block">3D Rendering</a>
   </div>
 </div>
 <div class="columns">
@@ -30,36 +30,46 @@
   </div>
 </div>
 <div class="divider"></div>
+<div align="center">
+  <ul class="pagination">
+    <% (0..@optimization.max_iteration_count).each do |i| %>
+      <li class="page-item<%= " active" if i == @iteration_id %>">
+        <a href="/trajectory_optimizations/<%= @optimization.id %>/<%= i %>"><%= i %></a>
+      </li>
+    <% end %>
+  </ul>
+</div>
+<div class="divider"></div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;">
-    <h4><a id="states_list" href="#states_list" style="text-decoration:none;">TrajectoryOptimization.states_list</a></h4>
+    <h4><a id="states_list" href="#states_list" style="text-decoration:none;">TrajectoryOptimization.states_list[<%= @iteration_id %>]</a></h4>
     <span>States of world reference trajectory in JSON.</span>
     <span><strong>Must be formatted in JSON. Rotations in degree, divided by 10 for representation.</strong></span>
-    <%= render partial: "layouts/chart_multiple", locals: { title: "states", data: @optimization.states_list, keys: ["x", "y", "z", "r"] } %>
+    <%= render partial: "layouts/chart", locals: { title: "states", data: json_stringify(@optimization.states_list, at=@iteration_id), keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
     <h6 data-id="states_list_code" class="copy">Raw Data</h6>
-    <pre id="states_list_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.states_list)) -%></pre>
+    <pre id="states_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@optimization.states_list, at=@iteration_id, pretty=true) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;padding-bottom:0px;">
-    <h4><a id="commands_list" href="#commands_list" style="text-decoration:none;">TrajectoryOptimization.commands_list</a></h4>
+    <h4><a id="commands_list" href="#commands_list" style="text-decoration:none;">TrajectoryOptimization.commands_list[<%= @iteration_id %>]</a></h4>
     <span>Actual commands for drone with repect to drone's body coordinate in JSON.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <%= render partial: "layouts/chart_multiple", locals: { title: "commands", data: @optimization.commands_list, keys: ["roll", "pitch", "throttle", "yaw"] } %>
+    <%= render partial: "layouts/chart", locals: { title: "commands", data: json_stringify(@optimization.commands_list, at=@iteration_id), keys: ["roll", "pitch", "throttle", "yaw"] } %>
     <h6 data-id="commands_list_code" class="copy">Raw Data</h6>
-    <pre id="commands_list_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.commands_list)) -%></pre>
+    <pre id="commands_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@optimization.commands_list, at=@iteration_id, pretty=true) -%></pre>
   </div>
 </div>
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;padding-bottom:0px;">
-    <h4><a id="simulator_log_list" href="#simulator_log_list" style="text-decoration:none;">TrajectoryOptimization.simulator_log_list</a></h4>
+    <h4><a id="simulator_log_list" href="#simulator_log_list" style="text-decoration:none;">TrajectoryOptimization.simulator_log_list[<%= @iteration_id %>]</a></h4>
     <span>Simulator Log from client.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <%= render partial: "layouts/chart_multiple", locals: { title: "simulator_log", data: @optimization.simulator_log_list, keys: ["positionX", "positionY", "positionZ", "yaw", "pitch", "roll"], time_param: "time" } %>
+    <%= render partial: "layouts/chart", locals: { title: "simulator_log", data: json_stringify(@optimization.simulator_log_list, at=@iteration_id), keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
     <h6 data-id="simulator_log_list_code" class="copy">Raw Data</h6>
-    <pre id="simulator_log_list_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@optimization.simulator_log_list)) -%></pre>
+    <pre id="simulator_log_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@optimization.simulator_log_list, at=@iteration_id, pretty=true) -%></pre>
   </div>
 </div>
 <script type="text/javascript">

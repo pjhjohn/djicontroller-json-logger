@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   post '/trajectory_optimization/:id/continue'  => 'trajectory_optimization#continue' , constraints: { id: /[0-9]+/ }
 
   # Trajectory Optimization Viewer
+  get  '/trajectory_optimizations/:id/:iteration_id/render' => 'trajectory_optimizations#iteration_render3d' , constraints: { id: /[0-9]+/, iteration_id: /[0-9]+/ }
+  get  '/trajectory_optimizations/:id/:iteration_id'        => 'trajectory_optimizations#iteration_show'     , constraints: { id: /[0-9]+/, iteration_id: /[0-9]+/ }
   get  '/trajectory_optimizations/:id/destroy'  => 'trajectory_optimizations#destroy' , constraints: { id: /[0-9]+/ }
   resources :trajectory_optimizations                                                 , constraints: { id: /[0-9]+/ }
 

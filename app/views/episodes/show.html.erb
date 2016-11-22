@@ -86,7 +86,7 @@
     <pre id="simulator_logs_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.simulator_logs)) -%></pre>
   </div>
 </div>
-<script typt="text/javascript">
+<script type="text/javascript">
   const codeBlocks = document.getElementsByTagName("pre");
   for (let i = 0; i < codeBlocks.length; i++) {
     const block = codeBlocks[i];
@@ -107,7 +107,7 @@
     } catch(err) {
       alert('Could not copy to clipboard');
     }
-  }
+  };
   document.querySelectorAll('.copy').forEach(button => button.addEventListener('click', copyToClipboard));
 </script>
 <style>

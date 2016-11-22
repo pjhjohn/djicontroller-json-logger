@@ -26,4 +26,24 @@ class TrajectoryOptimizationsController < ApplicationController
       format.json { head :ok }
     end
   end
+
+  def iteration_show
+    @optimization = TrajectoryOptimization.find(params[:id])
+    @iteration_id = params[:iteration_id].to_i
+
+    respond_to do |format|
+      format.html # iteration_show.html.erb
+      format.json { render json: serialize_optimization(@optimization) }
+    end
+  end
+
+  def iteration_render3d
+    @optimization = TrajectoryOptimization.find(params[:id])
+    @iteration_id = params[:iteration_id].to_i
+
+    respond_to do |format|
+      format.html # iteration_render3d.html.erb
+      format.json { render json: serialize_optimization(@optimization) }
+    end
+  end
 end
