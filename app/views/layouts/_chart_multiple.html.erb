@@ -16,39 +16,28 @@
     const time_param = "<%= time_param %>";
     let displayLegend = false;
     const labels = {
-      positionX: "PositionX",
-      positionY: "PositionY",
-      positionZ: "PositionZ",
-      x: "PositionX",
-      y: "PositionY",
-      z: "PositionZ",
-      r: "Yaw",
-      dx: "BodyVelocityX",
-      dy: "BodyVelocityY",
-      dz: "BodyVelocityZ",
-      w: "BodyAngVelocityYaw",
-      roll: "Roll",
-      pitch: "Pitch",
-      throttle: "Throttle",
-      yaw: "Yaw",
-      white: "#fff",
-    }
+      x: "x",
+      y: "y",
+      z: "z",
+      rx: "rx",
+      ry: "ry",
+      rz: "rz",
+      dx: "dx",
+      dy: "dy",
+      dz: "dz",
+      dyaw: "dyaw",
+    };
     const colors = {
-      positionX: "rgb(255, 159, 159)",
-      positionY: "rgb(159, 255, 159)",
-      positionZ: "rgb(159, 159, 255)",
       x: "rgb(255, 127, 127)",
       y: "rgb(127, 255, 127)",
       z: "rgb(127, 127, 255)",
-      r: "rgb(127, 127, 127)",
+      rx: "rgb(127, 255, 255)",
+      ry: "rgb(255, 127, 255)",
+      rz: "rgb(255, 255, 127)",
       dx: "rgb(255, 127, 127)",
       dy: "rgb(127, 255, 127)",
       dz: "rgb(127, 127, 255)",
-      w: "rgb(127, 127, 127)",
-      roll: "rgb(255, 127, 127)",
-      pitch: "rgb(127, 255, 127)",
-      throttle: "rgb(127, 127, 255)",
-      yaw: "rgb(127, 127, 127)",
+      dyaw: "rgb(127, 127, 127)",
       white: "#fff",
     };
     const <%= title %>Chart = new Chart(ctx, {
@@ -64,7 +53,7 @@
           pointHoverBorderColor: colors.white,
           data: datum.map(obj => ({
             x: obj[time_param],
-            y: obj[key] * ("rwyaw".includes(key) ? 0.1 : 1)
+            y: obj[key]
           })),
         }))).reduce((a, b) => a.concat(b))
       },
