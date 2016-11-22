@@ -21,6 +21,11 @@
 </head>
 <body>
   <div class="container grid-960">
+    <% if @optimization %>
+      <%= render partial: "layouts/navbar", locals: { controller: params[:controller], action: params[:action], episode: @optimization.episode, optimization: @optimization, url: request.original_url } %>
+    <% else %>
+      <%= render partial: "layouts/navbar", locals: { controller: params[:controller], action: params[:action], episode: @episode, optimization: @optimization, url: request.original_url } %>
+    <% end %>
     <%= yield %>
   </div>
 </body>

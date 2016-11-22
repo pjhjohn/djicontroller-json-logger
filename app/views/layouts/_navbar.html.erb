@@ -1,0 +1,38 @@
+<% unless url.include? "render" %>
+<ul class="tab tab-block">
+  <%# Home %>
+  <li class="tab-item active">
+    <a href="/"><%= "Home" %></a>
+  </li>
+  <%# Episode %>
+  <% if episode.nil? %>
+    <li class="tab-item">
+      <a href="/episodes">Episodes</a>
+    </li>
+  <% else %>
+    <li class="tab-item active">
+      <a href="/episodes/<%= episode.id %>">Episode#<%= episode.id %></a>
+    </li>
+  <% end %>
+  <%# Trajectory Optimization %>
+  <% if optimization.nil? %>
+    <li class="tab-item">
+      <a href="/trajectory_optimizations">TrajectoryOptimizations</a>
+    </li>
+  <% else %>
+    <li class="tab-item active">
+      <a href="/trajectory_optimizations/<%= optimization.id %>">TrajectoryOptimization#<%= optimization.id %></a>
+    </li>
+  <% end %>
+  <%# Render %>
+  <li class="tab-item">
+    <% if episode.nil? %>
+      <a href="#" disabled>Render in 3D</a>
+    <% elsif optimization.nil? %>
+      <a href="/episodes/<%= episode.id %>/render">Render in 3D</a>
+    <% else %>
+      <a href="/trajectory_optimizations/<%= optimization.id %>/0/render">Render in 3D</a>
+    <% end %>
+  </li>
+</ul>
+<% end %>
