@@ -111,6 +111,9 @@
     <h4><a id="simulator_logs" href="#simulator_logs" style="text-decoration:none;">Episode.simulator_logs</a></h4>
     <span>Simulator Log from the dji flight controller simulator in android.</span>
     <span><strong>Must be formatted in JSON</strong></span>
+    <% logs = JSON.parse(@episode.simulator_logs) %>
+    <% logs.insert(0, JSON.parse(@episode.states)) %>
+    <% @episode.simulator_logs = logs.to_json %>
     <%= render partial: "layouts/chart_multiple", locals: { title: "simulator_logs", data: @episode.simulator_logs, keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
     <h6 data-id="simulator_logs_code" class="copy">Raw Data</h6>
     <pre id="simulator_logs_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.simulator_logs)) -%></pre>
