@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 20161109131827) do
 
   create_table "trajectory_optimizations", force: :cascade do |t|
     t.integer  "episode_id"
-    t.string   "control_points_list"
+    t.string   "control_points_list",     default: "[]"
     t.string   "states_list"
     t.string   "commands_list"
     t.string   "simulator_log_list",      default: "[]"

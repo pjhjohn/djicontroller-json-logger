@@ -3,10 +3,11 @@
     <h3>Trajectory Optimizations</h3>
   </div>
 </div>
-<div class="divider"></div>
 <% if @optimizations.empty? %>
   <div class="columns">
-    <h1>No Trajectory Optimizations</h1>
+    <div class="column col-12" style="padding:0 15px;">
+      <h1>No Trajectory Optimizations</h1>
+    </div>
   </div>
 <% else %>
   <% @optimizations.each_slice(4).each do |optimization_row| %>
@@ -14,18 +15,19 @@
       <% optimization_row.each do |optimization| %>
         <div class="column col-3" style="padding:15px;">
           <a href="/trajectory_optimizations/<%= optimization.id %>" style="text-decoration:none;">
-          <div class="card">
-            <div class="card-header">
-              <h4 class="card-title"><%= optimization.id %>. <%= optimization.episode.name %></h4>
+            <div class="card" style="position:relative">
+              <div class="card-body">
+                <div style="font-size:20px;position:absolute;top:8px;right:12px;">#<%= optimization.id %></div>
+                <div>Episode #<%= optimization.episode.id %></div>
+                <div><%= optimization.episode.name %></div>
+                <div><%= optimization.episode.timestep %>ms timestep</div>
+                <div>Total <%= optimization.max_iteration_count %> iterations</div>
+                <div><%= JSON.parse(optimization.states_list).length %> states</div>
+                <div><%= JSON.parse(optimization.commands_list).length %> commands</div>
+                <div><%= JSON.parse(optimization.simulator_log_list).length %> simulator_logs</div>
+                <div>@ <%= optimization.created_at.strftime("%F %T") %></div>
+              </div>
             </div>
-            <div class="card-body">
-              <div>Timestep: <%= optimization.episode.timestep %>ms</div>
-              <div>Iteration Count: <%= optimization.max_iteration_count %></div>
-              <div>States: <%= JSON.parse(optimization.states_list).length %></div>
-              <div>Commands: <%= JSON.parse(optimization.commands_list).length %></div>
-              <div>Simulator Logs: <%= JSON.parse(optimization.simulator_log_list).length %></div>
-            </div>
-          </div>
           </a>
         </div>
       <% end %>

@@ -1,22 +1,41 @@
 <%= render partial: "layouts/title", locals: { id: @episode.id, title: @episode.name, url: "/episodes/#{@episode.id}/destroy" } %>
-<div class="columns">
-  <div class="column col-12" style="padding:15px;">
-    <a href="/episodes/<%=@episode.id%>/duplicate" class="btn btn-block">Duplicate This Episode</a>
+<% if @episode.trajectory_optimizations.empty? %>
+  <div class="columns">
+    <div class="column col-12" style="padding:0 15px;">
+      <h3>No Trajectory Optimizations</h3>
+    </div>
   </div>
-</div>
-<div class="divider"></div>
+<% else %>
+  <% @episode.trajectory_optimizations.each_slice(4).each do |optimization_row| %>
+    <div class="columns">
+      <% optimization_row.each do |optimization| %>
+        <div class="column col-3" style="padding:15px;">
+          <a href="/trajectory_optimizations/<%= optimization.id %>" style="text-decoration:none;">
+            <div class="card" style="position:relative">
+              <div class="card-body">
+                <div style="font-size:20px;position:absolute;top:8px;right:12px;">#<%= optimization.id %></div>
+                <div>Episode #<%= optimization.episode.id %></div>
+                <div><%= optimization.episode.name %></div>
+                <div><%= optimization.episode.timestep %>ms timestep</div>
+                <div>Total <%= optimization.max_iteration_count %> iterations</div>
+                <div><%= JSON.parse(optimization.states_list).length %> states</div>
+                <div><%= JSON.parse(optimization.commands_list).length %> commands</div>
+                <div><%= JSON.parse(optimization.simulator_log_list).length %> simulator_logs</div>
+                <div>@ <%= optimization.created_at.strftime("%F %T") %></div>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
 <div class="columns">
-  <div class="column col-7" style="padding:15px;padding-bottom:0px;">
-    <h4><a id="timestep" href="#timestep" style="text-decoration:none;">Episode.timestep</a></h4>
+  <div class="column col-6" style="padding:15px;">
+    <a href="/episodes/<%=@episode.id%>/duplicate" class="btn btn-block">Duplicate</a>
   </div>
-  <div class="column col-5" style="margin-top:20px;padding:15px;">
-    <a href="/episodes/<%=@episode.id%>.json" download="Episode#<%=@episode.id%>-<%=@episode.name%>.json" class="btn btn-block">Download This Episode</a>
-  </div>
-</div>
-<div class="columns">
-  <div class="column col-12" style="padding:15px;">
-    <span>Time interval between drone commands : </span>
-    <span><strong><%= @episode.timestep %>ms</strong></span>
+  <div class="column col-6" style="padding:15px;">
+    <a href="/episodes/<%=@episode.id%>.json" download="Episode#<%=@episode.id%>-<%=@episode.name%>.json" class="btn btn-block">Download</a>
   </div>
 </div>
 <div class="divider"></div>

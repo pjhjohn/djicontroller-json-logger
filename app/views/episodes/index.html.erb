@@ -6,16 +6,11 @@
     <a href="/episodes/new" class="btn btn-block">New Episode</a>
   </div>
 </div>
-<div class="divider"></div>
-<div class="columns">
-  <div class="column col-12" style="padding:15px;">
-    <a href="/trajectory_optimizations" class="btn btn-block">Trajectory Optimization Dashboard</a>
-  </div>
-</div>
-<div class="divider"></div>
 <% if @episodes.empty? %>
   <div class="columns">
-    <h1>No Episodes</h1>
+    <div class="column col-12" style="padding:0 15px;">
+      <h1>No Episodes</h1>
+    </div>
   </div>
 <% else %>
   <% @episodes.each_slice(4).each do |episode_row| %>
@@ -23,18 +18,18 @@
       <% episode_row.each do |episode| %>
         <div class="column col-3" style="padding:15px;">
           <a href="/episodes/<%= episode.id %>" style="text-decoration:none;">
-          <div class="card">
-            <div class="card-header">
-              <h4 class="card-title"><%= episode.id %>. <%= episode.name %></h4>
+            <div class="card" style="position:relative">
+              <div class="card-body">
+                <div style="font-size:20px;position:absolute;top:8px;right:12px;">#<%= episode.id %></div>
+                <div><%= episode.name %></div>
+                <div><%= episode.timestep %>ms timestep</div>
+                <div><%= JSON.parse(episode.states).length %> states</div>
+                <div><%= JSON.parse(episode.diff_states).length %> diff_states</div>
+                <div><%= JSON.parse(episode.commands).length %> commands</div>
+                <div><%= JSON.parse(episode.simulator_logs).length %> simulator_logs</div>
+                <div>@ <%= episode.created_at.strftime("%F %T") %></div>
+              </div>
             </div>
-            <div class="card-body">
-              <div>Timestep: <%= episode.timestep %>ms</div>
-              <div>States: <%= JSON.parse(episode.states).length %></div>
-              <div>State diffs: <%= JSON.parse(episode.diff_states).length %></div>
-              <div>Commands: <%= JSON.parse(episode.commands).length %></div>
-              <div>Simulator Logs: <%= JSON.parse(episode.simulator_logs).length %></div>
-            </div>
-          </div>
           </a>
         </div>
       <% end %>
