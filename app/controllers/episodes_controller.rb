@@ -17,6 +17,15 @@ class EpisodesController < ApplicationController
     end
   end
 
+  def new_with_control_points
+    @episode = Episode.new
+
+    respond_to do |format|
+      format.html # new_with_control_points.html.erb
+      format.json { render json: serialize_episode(@episode) }
+    end
+  end
+
   def create
     @episode = Episode.new
     @episode.name = params[:name]
@@ -25,6 +34,27 @@ class EpisodesController < ApplicationController
 
     respond_to do |format|
       if @episode.save
+        update_episode_diff_states(@episode)
+        update_episode_commands(@episode)
+        flash[:notice] = 'Episode was successfully created.'
+        format.html { redirect_to(@episode) }
+        format.json { render json: serialize_episode(@episode), status: :created, location: @episode }
+      else
+        format.html { render action: 'new' }
+        format.json { render json: @episode.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def create_with_control_points
+    @episode = Episode.new
+    @episode.name = params[:name]
+    @episode.timestep = clip(params[:timestep].to_i, 80, 120) unless params[:timestep].nil?
+    @episode.control_points = JSON.parse(params[:control_points]).to_json # Checks JSON validity during conversion
+
+    respond_to do |format|
+      if @episode.save
+        update_episode_states(@episode)
         update_episode_diff_states(@episode)
         update_episode_commands(@episode)
         flash[:notice] = 'Episode was successfully created.'
@@ -107,6 +137,14 @@ class EpisodesController < ApplicationController
   end
 
   ## Actions for Episode Data Update ##
+  def update_states
+    @episode = Episode.find(params[:id])
+    update_episode_states(@episode)
+    update_episode_diff_states(@episode)
+    update_episode_commands(@episode)
+    redirect_to(@episode)
+  end
+
   def update_diff_states
     @episode = Episode.find(params[:id])
     update_episode_diff_states(@episode)
@@ -138,13 +176,18 @@ class EpisodesController < ApplicationController
   end
 
   ## Alias shortcut functions for updating episode data ##
+  def update_episode_states(episode)
+    episode.states = control_points_to_states(JSON.parse(episode.control_points), episode.timestep).to_json
+    episode.save
+  end
+
   def update_episode_diff_states(episode)
     episode.diff_states = states_to_diff_states(JSON.parse(episode.states), episode.timestep).to_json
-    return episode.save
+    episode.save
   end
 
   def update_episode_commands(episode)
     episode.commands = diff_states_to_commands(JSON.parse(episode.diff_states)).to_json
-    return episode.save
+    episode.save
   end
 end

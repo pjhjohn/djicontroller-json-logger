@@ -1,15 +1,15 @@
 <div class="columns">
   <div class="column col-8" style="padding:15px;">
-    <h3>New Episode with States</h3>
+    <h3>New Episode with Control Points</h3>
   </div>
   <div class="column col-4" style="margin-top:30px;padding:15px;">
-    <a href="/episodes/control_points/new" class="btn btn-block">Use Control Points as input</a>
+    <a href="/episodes/new" class="btn btn-block">Use States as input</a>
   </div>
 </div>
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-12" style="padding:15px;">
-    <form action="/episodes" method="POST">
+    <form action="/episodes/control_points" method="POST">
       <!-- name:string -->
       <div class="form-group">
         <label class="form-label" for="name" style="font-weight:bold;padding:5px 0px;">Name</label>
@@ -22,10 +22,10 @@
         <input class="form-input" type="number" id="timestep" name="timestep" placeholder="Valid : 40 ~ 200ms" min="40" max="200" value="200"/>
       </div>
       
-      <!-- states:JSON -->
+      <!-- control_points:JSON -->
       <div class="form-group">
-        <label class="form-label" for="states" style="font-weight:bold;padding:5px 0px;">States in JSON</label>
-        <textarea class="form-input" id="states" name="states" placeholder="Invalid JSON will be ignored" rows="30"></textarea>
+        <label class="form-label" for="control_points" style="font-weight:bold;padding:5px 0px;">Control Points in JSON</label>
+        <textarea class="form-input" id="control_points" name="control_points" placeholder="Invalid JSON will be ignored" rows="30"></textarea>
       </div>
 
       <div class="form-group" align="right">

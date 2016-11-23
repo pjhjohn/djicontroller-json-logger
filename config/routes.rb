@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   # Root
   root :to => 'episodes#index'
 
-  # Tajectory Optimization
+  # Trajectory Optimization
   post '/trajectory_optimization/init'          => 'trajectory_optimization#init'
   post '/trajectory_optimization/:id/continue'  => 'trajectory_optimization#continue' , constraints: { id: /[0-9]+/ }
 
@@ -20,7 +20,9 @@ Rails.application.routes.draw do
   get  '/episodes/:id/update_commands'          => 'episodes#update_commands'         , constraints: { id: /[0-9]+/ }
   post '/episodes/:id/update_simulator_log'     => 'episodes#update_simulator_log'    , constraints: { id: /[0-9]+/ }
 
-  # Base RESTful Routes
+  # Base REST-ful Routes
+  get  '/episodes/control_points/new'           => 'episodes#new_with_control_points'    , constraints: { id: /[0-9]+/ }
+  post '/episodes/control_points'               => 'episodes#create_with_control_points' , constraints: { id: /[0-9]+/ }
   get  '/episodes/:id/render'                   => 'episodes#render3d'                , constraints: { id: /[0-9]+/ }
   post '/episodes/:id'                          => 'episodes#update'                  , constraints: { id: /[0-9]+/ }
   get  '/episodes/:id/destroy'                  => 'episodes#destroy'                 , constraints: { id: /[0-9]+/ }

@@ -10,6 +10,28 @@ class ApplicationController < ActionController::Base
   end
 
   ## Episode Data Manipulation ##
+  # Temporarily ignores ry, rz to zero
+  def control_points_to_states(control_points, timestep)
+    bez = Bezier::Curve.new(*control_points.map{ |point| [point["x"], point["y"], point["z"], point["rz"]]})
+    max_time = control_points.last["t"]
+    states = []
+    time = 0
+    while time <= max_time do
+      point = bez.point_on_curve(time / max_time)
+      states.push({
+        :t => time,
+        :x => point.x,
+        :y => point.y,
+        :z => point.z,
+        :rx => 0.0,
+        :ry => 0.0,
+        :rz => point.r,
+      })
+      time += timestep
+      end
+    states
+  end
+
   def states_to_diff_states(states, timestep)
     (0...states.length-1).map do |i|
       curr_state, next_state, timestep_in_sec = states[i], states[i+1], timestep / 1000.0

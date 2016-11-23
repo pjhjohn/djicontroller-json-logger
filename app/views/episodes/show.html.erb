@@ -38,6 +38,26 @@
     <a href="/episodes/<%=@episode.id%>.json" download="Episode#<%=@episode.id%>-<%=@episode.name%>.json" class="btn btn-block">Download</a>
   </div>
 </div>
+<% unless JSON.parse(@episode.control_points).empty? %>
+  <div class="divider"></div>
+  <div class="columns">
+    <div class="column col-7" style="padding:15px;padding-bottom:0px;">
+      <h4><a id="control_points" href="#control_points" style="text-decoration:none;">Episode.control_points</a></h4>
+    </div>
+    <div class="column col-5" style="margin-top:20px;padding:15px;">
+      <a href="/episodes/<%=@episode.id%>/update_states" class="btn btn-block">Update Episode.states</a>
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column col-12" style="padding:15px;padding-top:0px;">
+      <span>World referenced control_points in JSON</span>
+      <span><strong>Must be formatted in JSON. Rotations in degree, divided by 10 for representation.</strong></span>
+      <%= render partial: "layouts/chart", locals: { title: "control_points", data: @episode.control_points, keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
+      <h6 data-id="control_points_code" class="copy">Raw Data</h6>
+      <pre id="control_points_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.control_points)) -%></pre>
+    </div>
+  </div>
+<% end %>
 <div class="divider"></div>
 <div class="columns">
   <div class="column col-7" style="padding:15px;padding-bottom:0px;">
