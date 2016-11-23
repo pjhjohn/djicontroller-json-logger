@@ -69,7 +69,7 @@
   <div class="column col-12" style="padding:15px;padding-top:0px;">
     <span>Body referenced differential of states.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <%= render partial: "layouts/chart", locals: { title: "diff_states", data: @episode.diff_states, keys: ["dx", "dy", "dz", "dyaw"] } %>
+    <%= render partial: "layouts/chart", locals: { title: "diff_states", data: @episode.diff_states, keys: ["dx", "dy", "dz", "drz"] } %>
     <h6 data-id="diff_states_code" class="copy">Raw Data</h6>
     <pre id="diff_states_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.diff_states)) -%></pre>
   </div>
@@ -80,7 +80,7 @@
     <h4><a id="commands" href="#commands" style="text-decoration:none;">Episode.commands</a></h4>
     <span>Actual commands for drone with repect to drone's body coordinate in JSON.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <%= render partial: "layouts/chart", locals: { title: "commands", data: @episode.commands, keys: ["dx", "dy", "dz", "dyaw"] } %>
+    <%= render partial: "layouts/chart", locals: { title: "commands", data: @episode.commands, keys: ["dx", "dy", "dz", "drz"] } %>
     <h6 data-id="commands_code" class="copy">Raw Data</h6>
     <pre id="commands_code" class="code lang-js" style="height:84px;"><%= JSON.pretty_generate(JSON.parse(@episode.commands)) -%></pre>
   </div>

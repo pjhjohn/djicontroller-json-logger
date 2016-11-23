@@ -44,7 +44,7 @@
     <h4><a id="commands_list" href="#commands_list" style="text-decoration:none;">TrajectoryOptimization.commands_list</a></h4>
     <span>Actual commands for drone with repect to drone's body coordinate in JSON.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <%= render partial: "layouts/chart_multiple", locals: { title: "commands", data: @optimization.commands_list, keys: ["dx", "dy", "dz", "dyaw"] } %>
+    <%= render partial: "layouts/chart_multiple", locals: { title: "commands", data: @optimization.commands_list, keys: ["dx", "dy", "dz", "drz"] } %>
     <h6 data-id="commands_list_code" class="copy">Raw Data</h6>
     <pre id="commands_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@optimization.commands_list, nil, true) -%></pre>
   </div>

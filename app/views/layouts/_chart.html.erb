@@ -23,7 +23,7 @@
       dx: "dx",
       dy: "dy",
       dz: "dz",
-      dyaw: "dyaw",
+      drz: "drz",
     };
     const colors = {
       x: "rgb(255, 127, 127)",
@@ -35,7 +35,7 @@
       dx: "rgb(255, 127, 127)",
       dy: "rgb(127, 255, 127)",
       dz: "rgb(127, 127, 255)",
-      dyaw: "rgb(127, 127, 127)",
+      drz: "rgb(127, 127, 127)",
       white: "#fff",
     };
     const <%= title %>Chart = new Chart(ctx, {
@@ -70,7 +70,7 @@
             position: 'right',
             scaleLabel: {
               display: true,
-              labelString: 'Rotation Angle : rx, ry, rz in [degree]      Rotation Angular Velocity : dyaw in [degree/s]'
+              labelString: 'Rotation Angle : rx, ry, rz in [degree]      Rotation Angular Velocity : drz in [degree/s]'
             }
           }]
         },

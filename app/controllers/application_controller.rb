@@ -30,17 +30,17 @@ class ApplicationController < ActionController::Base
       rotation_diff = curr_mat.inverse * next_mat
       global_x_axis = Geo3d::Vector.new 1, 0, 0
       diff_x_axis = rotation_diff * global_x_axis
-      yaw_diff = Math.acos(diff_x_axis.normalize.dot global_x_axis)
+      rz_diff = Math.acos(diff_x_axis.normalize.dot global_x_axis)
       if diff_x_axis.y < 0
-        yaw_diff = -yaw_diff
+        rz_diff = -rz_diff
       end
 
       {
-        :t  => curr_state["t"],
-        :dx => clip(local_velocity.x, 15.0), # Will convert into Roll
-        :dy => clip(local_velocity.y, 15.0), # Will convert into Pitch
-        :dz => clip(local_velocity.z,  4.0), # Will convert into Throttle
-        :w  => clip(yaw_diff.to_degrees / timestep_in_sec, 100.0), # Will convert into Yaw
+        :t   => curr_state["t"],
+        :dx  => clip(local_velocity.x, 15.0), # Will convert into Roll in client
+        :dy  => clip(local_velocity.y, 15.0), # Will convert into Pitch in client
+        :dz  => clip(local_velocity.z,  4.0), # Will convert into Throttle in client
+        :drz => clip(rz_diff.to_degrees / timestep_in_sec, 100.0), # Will convert into Yaw in client
       }
     end
   end
@@ -48,11 +48,11 @@ class ApplicationController < ActionController::Base
   def diff_states_to_commands(diff_states)
     diff_states.map do |diff_state|
       {
-        :t        => diff_state["t"],
-        :roll     => normalized_clip( diff_state["dx"],  15.0), # same axis : front
-        :pitch    => normalized_clip(-diff_state["dy"],  15.0), # pitch axis towards right
-        :throttle => normalized_clip( diff_state["dz"],   4.0), # same axis : altitude
-        :yaw      => normalized_clip(-diff_state[ "w"], 100.0)  # yaw axis towards bottom
+        :t   => diff_state["t"],
+        :dx  => normalized_clip(diff_state["dx"],   15.0), # Will convert into Roll in client
+        :dy  => normalized_clip(diff_state["dy"],   15.0), # Will convert into Pitch in client
+        :dz  => normalized_clip(diff_state["dz"],    4.0), # Will convert into Throttle in client
+        :drz => normalized_clip(diff_state["drz"], 100.0), # Will convert into Yaw in client
       }
     end
   end
