@@ -51,6 +51,7 @@
           pointHoverBackgroundColor: colors[key],
           pointHoverBorderColor: colors.white,
           data: listByKey(key),
+          yAxisID: ['rotation', 'position'][+(["rx", "ry", "rz", "drz"].indexOf(key) == -1)],
         }))
       },
       options: {

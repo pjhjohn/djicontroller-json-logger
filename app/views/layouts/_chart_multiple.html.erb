@@ -55,6 +55,7 @@
             x: obj[time_param],
             y: obj[key]
           })),
+          yAxisID: ['rotation', 'position'][+(["rx", "ry", "rz", "drz"].indexOf(key) == -1)],
         }))).reduce((a, b) => a.concat(b))
       },
       options: {
