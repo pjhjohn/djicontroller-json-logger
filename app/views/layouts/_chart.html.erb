@@ -54,6 +54,26 @@
         }))
       },
       options: {
+        scales: {
+          yAxes: [{
+            id: 'position',
+            type: 'linear',
+            position: 'left',
+            scaleLabel: {
+              display: true,
+              labelString: 'Position : x, y, z in [m]      Velocity : dx, dy, dz in [m/s]'
+            }
+          },
+          {
+            id: 'rotation',
+            type: 'linear',
+            position: 'right',
+            scaleLabel: {
+              display: true,
+              labelString: 'Rotation Angle : rx, ry, rz in [degree]      Rotation Angular Velocity : dyaw in [degree/s]'
+            }
+          }]
+        },
         legend: {
           display: displayLegend
         }
