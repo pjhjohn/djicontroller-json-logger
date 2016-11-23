@@ -13,3 +13,21 @@
  *= require_tree .
  *= require_self
  */
+
+/* code copy button */
+.copy {
+    color: #5764c6;
+    cursor: pointer;
+}
+.copy:hover {
+    color: #283176;
+}
+
+/* chart header */
+.chart-header {
+    color: #5764c6;
+    cursor: pointer;
+}
+.chart-header:hover {
+    color: #283176;
+}
