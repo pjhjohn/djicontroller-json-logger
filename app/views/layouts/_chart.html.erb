@@ -14,29 +14,16 @@
     const keys = <%= raw keys %>;
     let displayLegend = true;
     const labels = {
-      x: "x",
-      y: "y",
-      z: "z",
-      rx: "rx",
-      ry: "ry",
-      rz: "rz",
-      dx: "dx",
-      dy: "dy",
-      dz: "dz",
+      x :  "x",  y:  "y",  z:  "z",
+      rx: "rx", ry: "ry", rz: "rz",
+      dx: "dx", dy: "dy", dz: "dz",
       drz: "drz",
     };
     const colors = {
-      x: "rgb(255, 127, 127)",
-      y: "rgb(127, 255, 127)",
-      z: "rgb(127, 127, 255)",
-      rx: "rgb(127, 255, 255)",
-      ry: "rgb(255, 127, 255)",
-      rz: "rgb(255, 255, 127)",
-      dx: "rgb(255, 127, 127)",
-      dy: "rgb(127, 255, 127)",
-      dz: "rgb(127, 127, 255)",
-      drz: "rgb(127, 127, 127)",
-      white: "#fff",
+      x:  "rgb(255, 127, 127)", y:  "rgb(127, 255, 127)", z:  "rgb(127, 127, 255)",
+      rx: "rgb(100, 245, 245)", ry: "rgb(245, 100, 245)", rz: "rgb(245, 245, 100)",
+      dx: "rgb(255, 127, 127)", dy: "rgb(127, 255, 127)", dz: "rgb(127, 127, 255)",
+      drz: "rgb(245, 245, 100)", white: "#fff",
     };
     const <%= title %>Chart = new Chart(ctx, {
       type: 'line',
