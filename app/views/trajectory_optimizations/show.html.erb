@@ -9,17 +9,11 @@
         <a href="/trajectory_optimizations/<%= @optimization.id %>">All</a>
       </li>
       <% (0...@optimization.max_iteration_count).each do |i| %>
-          <li class="page-item<%= " active" if i == @iteration_id %>">
-            <a href="/trajectory_optimizations/<%= @optimization.id %>/<%= i %>"><%= i %></a>
-          </li>
+        <li class="page-item<%= " active" if i == @iteration_id %>">
+          <a href="/trajectory_optimizations/<%= @optimization.id %>/<%= i %>"><%= i %></a>
+        </li>
       <% end %>
     </ul>
-  </div>
-</div>
-<div class="columns">
-  <div class="column col-12" style="padding:15px;">
-    <div>Time interval between drone commands : <strong><%= @optimization.episode.timestep %>ms</strong></div>
-    <div>Max Iteration Count : <strong><%= @optimization.max_iteration_count %></strong></div>
   </div>
 </div>
 <div class="columns">
@@ -29,33 +23,14 @@
 </div>
 <div class="divider"></div>
 <div class="columns">
-  <div class="column col-12" style="padding:15px;">
-    <h4><a id="states_list" href="#states_list" style="text-decoration:none;">TrajectoryOptimization.states_list</a></h4>
-    <span>States of world reference trajectory in JSON.</span>
-    <span><strong>Must be formatted in JSON. Rotations in degree, divided by 10 for representation.</strong></span>
-    <%= render partial: "layouts/chart_multiple", locals: { title: "states", data: @optimization.states_list, keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
-    <h6 data-id="states_list_code" class="copy">Raw Data</h6>
-    <pre id="states_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@optimization.states_list, nil, true) -%></pre>
-  </div>
-</div>
-<div class="divider"></div>
-<div class="columns">
-  <div class="column col-12" style="padding:15px;padding-bottom:0px;">
-    <h4><a id="commands_list" href="#commands_list" style="text-decoration:none;">TrajectoryOptimization.commands_list</a></h4>
-    <span>Actual commands for drone with repect to drone's body coordinate in JSON.</span>
-    <span><strong>Must be formatted in JSON</strong></span>
-    <%= render partial: "layouts/chart_multiple", locals: { title: "commands", data: @optimization.commands_list, keys: ["dx", "dy", "dz", "drz"] } %>
-    <h6 data-id="commands_list_code" class="copy">Raw Data</h6>
-    <pre id="commands_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@optimization.commands_list, nil, true) -%></pre>
-  </div>
-</div>
-<div class="divider"></div>
-<div class="columns">
   <div class="column col-12" style="padding:15px;padding-bottom:0px;">
     <h4><a id="simulator_log_list" href="#simulator_log_list" style="text-decoration:none;">TrajectoryOptimization.simulator_log_list</a></h4>
     <span>Simulator Log from client.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <%= render partial: "layouts/chart_multiple", locals: { title: "simulator_log", data: @optimization.simulator_log_list, keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
+    <% log_list = JSON.parse(@optimization.simulator_log_list) %>
+    <% log_list.insert(0, JSON.parse(@optimization.states_list)[0]) %>
+    <% @optimization.simulator_log_list = log_list.to_json %>
+    <%= render partial: "layouts/chart_multiple", locals: { title: "simulator_log", data: @optimization.simulator_log_list, keys: ["x", "y", "rz"] } %>
     <h6 data-id="simulator_log_list_code" class="copy">Raw Data</h6>
     <pre id="simulator_log_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@optimization.simulator_log_list, nil, true) -%></pre>
   </div>
