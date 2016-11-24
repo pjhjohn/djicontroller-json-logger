@@ -36,17 +36,8 @@ class ApplicationController < ActionController::Base
     (0...states.length-1).map do |i|
       curr_state, next_state, timestep_in_sec = states[i], states[i+1], timestep / 1000.0
 
-      curr_pos = Geo3d::Vector.new curr_state["x"], curr_state["y"], curr_state["z"]
-      curr_mat = Geo3d::Matrix.identity
-      curr_mat *= Geo3d::Matrix.rotation_x curr_state["rx"].degrees
-      curr_mat *= Geo3d::Matrix.rotation_y curr_state["ry"].degrees
-      curr_mat *= Geo3d::Matrix.rotation_z curr_state["rz"].degrees
-
-      next_pos = Geo3d::Vector.new next_state["x"], next_state["y"], next_state["z"]
-      next_mat = Geo3d::Matrix.identity
-      next_mat *= Geo3d::Matrix.rotation_x next_state["rx"].degrees
-      next_mat *= Geo3d::Matrix.rotation_y next_state["ry"].degrees
-      next_mat *= Geo3d::Matrix.rotation_z next_state["rz"].degrees
+      curr_pos, curr_mat = state_to_pos_n_rot(curr_state)
+      next_pos, next_mat = state_to_pos_n_rot(next_state)
 
       local_velocity = curr_mat.inverse * (next_pos - curr_pos) / timestep_in_sec
       rotation_diff = curr_mat.inverse * next_mat
@@ -77,6 +68,16 @@ class ApplicationController < ActionController::Base
         :drz => normalized_clip(diff_state["drz"], 100.0), # Will convert into Yaw in client
       }
     end
+  end
+
+  ## Matrix Calculation Helpers ##
+  def state_to_pos_n_rot(state)
+    pos = Geo3d::Vector.new state["x"], state["y"], state["z"]
+    mat = Geo3d::Matrix.identity
+    mat *= Geo3d::Matrix.rotation_x state["rx"].degrees
+    mat *= Geo3d::Matrix.rotation_y state["ry"].degrees
+    mat *= Geo3d::Matrix.rotation_z state["rz"].degrees
+    return pos, mat
   end
 
   ## Simple Math ##
