@@ -121,7 +121,7 @@ class EpisodesController < ApplicationController
         format.html { redirect_to(@episode) }
         format.json { render json: serialize_episode(@episode), status: :created, location: @episode }
       else
-        format.html { render action: 'new' }
+        format.html { redirect_to :back }
         format.json { render json: @episode.errors, status: :unprocessable_entity }
       end
     end

@@ -5,28 +5,29 @@ Rails.application.routes.draw do
 
   # Trajectory Optimization
   post '/trajectory_optimization/init'          => 'trajectory_optimization#init'
-  post '/trajectory_optimization/:id/continue'  => 'trajectory_optimization#continue' , constraints: { id: /[0-9]+/ }
+  post '/trajectory_optimization/:id/continue'  => 'trajectory_optimization#continue'   , constraints: { id: /[0-9]+/ }
 
   # Trajectory Optimization Viewer
   get  '/trajectory_optimizations/:id/:iteration_id/render' => 'trajectory_optimizations#iteration_render3d' , constraints: { id: /[0-9]+/, iteration_id: /[0-9]+/ }
   get  '/trajectory_optimizations/:id/:iteration_id'        => 'trajectory_optimizations#iteration_show'     , constraints: { id: /[0-9]+/, iteration_id: /[0-9]+/ }
-  get  '/trajectory_optimizations/:id/destroy'  => 'trajectory_optimizations#destroy' , constraints: { id: /[0-9]+/ }
-  resources :trajectory_optimizations                                                 , constraints: { id: /[0-9]+/ }
+  get  '/trajectory_optimizations/:id/destroy'  => 'trajectory_optimizations#destroy'   , constraints: { id: /[0-9]+/ }
+  get  '/trajectory_optimizations/:id/duplicate'=> 'trajectory_optimizations#duplicate' , constraints: { id: /[0-9]+/ }
+  resources :trajectory_optimizations                                                   , constraints: { id: /[0-9]+/ }
 
   # Additional Update Routes
-  get  '/episodes/:id/duplicate'                => 'episodes#duplicate'               , constraints: { id: /[0-9]+/ }
-  get  '/episodes/:id/update_states'            => 'episodes#update_states'           , constraints: { id: /[0-9]+/ }
-  get  '/episodes/:id/update_diff_states'       => 'episodes#update_diff_states'      , constraints: { id: /[0-9]+/ }
-  get  '/episodes/:id/update_commands'          => 'episodes#update_commands'         , constraints: { id: /[0-9]+/ }
-  post '/episodes/:id/update_simulator_log'     => 'episodes#update_simulator_log'    , constraints: { id: /[0-9]+/ }
+  get  '/episodes/:id/duplicate'                => 'episodes#duplicate'                 , constraints: { id: /[0-9]+/ }
+  get  '/episodes/:id/update_states'            => 'episodes#update_states'             , constraints: { id: /[0-9]+/ }
+  get  '/episodes/:id/update_diff_states'       => 'episodes#update_diff_states'        , constraints: { id: /[0-9]+/ }
+  get  '/episodes/:id/update_commands'          => 'episodes#update_commands'           , constraints: { id: /[0-9]+/ }
+  post '/episodes/:id/update_simulator_log'     => 'episodes#update_simulator_log'      , constraints: { id: /[0-9]+/ }
 
   # Base REST-ful Routes
-  get  '/episodes/control_points/new'           => 'episodes#new_with_control_points'    , constraints: { id: /[0-9]+/ }
-  post '/episodes/control_points'               => 'episodes#create_with_control_points' , constraints: { id: /[0-9]+/ }
-  get  '/episodes/:id/render'                   => 'episodes#render3d'                , constraints: { id: /[0-9]+/ }
-  post '/episodes/:id'                          => 'episodes#update'                  , constraints: { id: /[0-9]+/ }
-  get  '/episodes/:id/destroy'                  => 'episodes#destroy'                 , constraints: { id: /[0-9]+/ }
-  resources :episodes                                                                 , constraints: { id: /[0-9]+/ }
+  get  '/episodes/control_points/new'           => 'episodes#new_with_control_points'   , constraints: { id: /[0-9]+/ }
+  post '/episodes/control_points'               => 'episodes#create_with_control_points', constraints: { id: /[0-9]+/ }
+  get  '/episodes/:id/render'                   => 'episodes#render3d'                  , constraints: { id: /[0-9]+/ }
+  post '/episodes/:id'                          => 'episodes#update'                    , constraints: { id: /[0-9]+/ }
+  get  '/episodes/:id/destroy'                  => 'episodes#destroy'                   , constraints: { id: /[0-9]+/ }
+  resources :episodes                                                                   , constraints: { id: /[0-9]+/ }
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

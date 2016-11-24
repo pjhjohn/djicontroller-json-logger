@@ -27,6 +27,21 @@ class TrajectoryOptimizationsController < ApplicationController
     end
   end
 
+  def duplicate
+    @optimization = TrajectoryOptimization.find(params[:id]).dup
+
+    respond_to do |format|
+      if @optimization.save
+        flash[:notice] = 'optimization was successfully duplicated.'
+        format.html { redirect_to(@optimization) }
+        format.json { render json: serialize_optimization(@optimization), status: :created, location: @optimization }
+      else
+        format.html { redirect_to :back }
+        format.json { render json: @optimization.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   def iteration_show
     @optimization = TrajectoryOptimization.find(params[:id])
     @iteration_id = params[:iteration_id].to_i

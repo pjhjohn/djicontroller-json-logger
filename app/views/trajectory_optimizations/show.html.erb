@@ -23,8 +23,11 @@
   </div>
 </div>
 <div class="columns">
-  <div class="column col-12" style="margin-top:20px;padding:15px;">
-    <a href="/trajectory_optimizations/<%=@optimization.id%>.json" download="optimization#<%=@optimization.id%>-<%=@optimization.episode.name%>.json" class="btn btn-block">Download This optimization</a>
+  <div class="column col-6" style="padding:15px;">
+    <a href="/trajectory_optimizations/<%=@optimization.id%>/duplicate" class="btn btn-block">Duplicate</a>
+  </div>
+  <div class="column col-6" style="padding:15px;">
+    <a href="/trajectory_optimizations/<%=@optimization.id%>.json" download="optimization#<%=@optimization.id%>-<%=@optimization.episode.name%>.json" class="btn btn-block">Download</a>
   </div>
 </div>
 <div class="divider"></div>
