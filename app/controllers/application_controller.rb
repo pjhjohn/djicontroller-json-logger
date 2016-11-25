@@ -80,6 +80,47 @@ class ApplicationController < ActionController::Base
     return pos, mat
   end
 
+  def matrix_to_euler(matrix)
+    quaternion = matrix2quaternion matrix
+    x, y, z, w = quaternion.x, quaternion.y, quaternion.z, quaternion.w
+    rx = Math::atan( (2 * (w * x + y * z)) / (w**2 - x**2 - y**2 + z**2) )
+    ry = Math::asin( -2 * (x*z - w*y) )
+    rz = Math::atan( (2 * (x*y + w*z)) / (w**2 + x**2 - y**2 - z**2) )
+    return rx.to_degrees, ry.to_degrees, rz.to_degrees
+  end
+
+  def matrix2quaternion (m)
+
+    next_index = [1, 2, 0]
+    trace = m[0,0] + m[1,1] + m[2,2]
+    q = [0, 0, 0, 0]
+
+    if trace > 0.0
+      s = Math.sqrt( trace + 1.0 )
+      q[0] = ( s * 0.5 )
+      s = 0.5 / s
+      q[1] = ( m[1,2] - m[2,1] ) * s
+      q[2] = ( m[2,0] - m[0,2] ) * s
+      q[3] = ( m[0,1] - m[1,0] ) * s
+
+    else
+      i = 0
+      i = 1 if m[1,1] > m[0,0]
+      i = 2 if m[2,2] > m[i,i]
+
+      j = next_index[i]
+      k = next_index[j]
+
+      s = Math.sqrt( (m[i,i] - (m[j,j] + m[k,k])) + 1.0 )
+      q[i+1] = s * 0.5
+      s = 0.5 / s
+      q[0]   = ( m[j,k] - m[k,j] ) * s
+      q[j+1] = ( m[i,j] + m[j,i] ) * s
+      q[k+1] = ( m[i,k] + m[k,i] ) * s
+    end
+    Geo3d::Quaternion.new q[1], q[2], q[3], q[0]
+  end
+
   ## Simple Math ##
   ## Limitations of Drone (both positive & negative)
   # Yaw : 100degrees/s

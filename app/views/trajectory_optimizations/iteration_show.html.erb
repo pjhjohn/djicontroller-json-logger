@@ -50,9 +50,9 @@
     <h4><a id="simulator_log_list" href="#simulator_log_list" style="text-decoration:none;">TrajectoryOptimization.simulator_log_list[<%= @iteration_id %>]</a></h4>
     <span>Simulator Log from client.</span>
     <span><strong>Must be formatted in JSON</strong></span>
-    <%= render partial: "layouts/chart", locals: { title: "simulator_log", data: json_stringify(@optimization.simulator_log_list, @iteration_id), keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
+    <%= render partial: "layouts/chart_multiple", locals: { title: "simulator_log", data: [JSON.parse(@refined_reference), JSON.parse(@optimization.simulator_log_list)[@iteration_id], JSON.parse(@refined_response)].to_json, keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
     <h6 data-id="simulator_log_list_code" class="copy">Raw Data</h6>
-    <pre id="simulator_log_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@optimization.simulator_log_list, @iteration_id, true) -%></pre>
+    <pre id="simulator_log_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@refined_response, nil, true) -%></pre>
   </div>
 </div>
 <script type="text/javascript">

@@ -57,6 +57,28 @@ class TrajectoryOptimizationController < ApplicationController
     render :json => build_optimization_feedback(@optimization)
   end
 
+  def refine_states(states)
+    bias_pos, bias_mat = state_to_pos_n_rot(states[0])
+    bias_mat = Geo3d::Matrix.rotation_z states[0]["rz"].degrees
+    states.map do |state|
+      pos, mat = state_to_pos_n_rot(state)
+      refined_pos = bias_mat.inverse * (pos - bias_pos)
+      refined_mat = bias_mat.inverse * mat
+      rx, ry, rz = matrix_to_euler(refined_mat)
+      {
+        :t => state["t"],
+        :x => refined_pos.x,
+        :y => refined_pos.y,
+        :z => refined_pos.z,
+        :rx => rx,
+        :ry => ry,
+        :rz => rz,
+        :refined_pos => refined_pos,
+        :refined_mat => refined_mat,
+      }
+    end
+  end
+
   def get_distance(state1, state2)
     0 # TODO : implement this
   end

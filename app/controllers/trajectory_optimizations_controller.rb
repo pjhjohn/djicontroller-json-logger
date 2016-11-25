@@ -1,4 +1,4 @@
-class TrajectoryOptimizationsController < ApplicationController
+class TrajectoryOptimizationsController < TrajectoryOptimizationController
   def index
     @optimizations = TrajectoryOptimization.all
 
@@ -46,6 +46,9 @@ class TrajectoryOptimizationsController < ApplicationController
     @optimization = TrajectoryOptimization.find(params[:id])
     @iteration_id = params[:iteration_id].to_i
 
+    @refined_reference = refine_states(JSON.parse(@optimization.episode.states)).to_json
+    @refined_response  = refine_states(JSON.parse(@optimization.simulator_log_list)[@iteration_id]).to_json
+
     respond_to do |format|
       format.html # iteration_show.html.erb
       format.json { render json: serialize_optimization(@optimization) }
@@ -55,6 +58,9 @@ class TrajectoryOptimizationsController < ApplicationController
   def iteration_render3d
     @optimization = TrajectoryOptimization.find(params[:id])
     @iteration_id = params[:iteration_id].to_i
+
+    @refined_reference = refine_states(JSON.parse(@optimization.episode.states)).to_json
+    @refined_response  = refine_states(JSON.parse(@optimization.simulator_log_list)[@iteration_id]).to_json
 
     respond_to do |format|
       format.html # iteration_render3d.html.erb
