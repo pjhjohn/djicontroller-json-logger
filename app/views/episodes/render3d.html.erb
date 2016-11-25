@@ -70,13 +70,12 @@
         // ThreeJS Scene & Camera
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 0.1, 1000);
-        camera.up.set(0, 0, 1);
-        camera.position.set(3, 3, 3);
-        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        camera.up.set(0, 1, 0);
+        camera.position.set(5, -1, 5);
 
         // Camera Controls
         cameraControls = new THREE.TrackballControls(camera, renderer.domElement);
-        cameraControls.target.set(0, 0, 0);
+        cameraControls.target.set(5, -1, 0);
 
         // Grid & Axis
         const gridHelper = new THREE.GridHelper(5, 10);
@@ -85,32 +84,14 @@
         const axisHelper = new THREE.AxisHelper(2);
         scene.add(axisHelper);
 
-        // State Visualization : Trajectory
-        const mLine = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 1});
-        const trajectory = new THREE.Line(statesGeom, mLine);
-        scene.add(trajectory);
-
-        // State Visualization : Points
-        const mPoints = new THREE.PointsMaterial({ color: 0x888888, size: 3, sizeAttenuation: false });
-        const points = new THREE.Points(statesGeom, mPoints);
-        scene.add(points);
-
-        // State Visualization : Orientation
-        states.map(state => scene.add(new THREE.ArrowHelper(
-          new THREE.Vector3(1, 0, 0).applyMatrix4(getRotationMatrixFromState(state)),
-          new THREE.Vector3(state.x, state.y, state.z),
-          0.5,
-          0xff8888
-        )));
-
         // Lighting
         const light = new THREE.DirectionalLight(0xffffff, 0.55);
         light.position.set(0, 0, 1);
         scene.add(light);
 
-        // Drone Geometry for Animation
-        const droneGeom = new THREE.Geometry();
+        // Drone Geometry
         const droneMaterial = new THREE.MeshBasicMaterial({ color: 0x02c002, side: THREE.DoubleSide, vertexColors: THREE.FaceColors });
+        const droneGeom = new THREE.Geometry();
         droneGeom.vertices.push(
           new THREE.Vector3( 0.2, 0.0, 0.0),
           new THREE.Vector3(-0.1, 0.1, 0.0),
@@ -127,6 +108,23 @@
           new THREE.Face3(4, 3, 0)
         );
         droneGeom.faces.map(face => face.color.setRGB(Math.random(), Math.random(), Math.random()));
+
+        // State Visualization : Trajectory
+        const mLine = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 1});
+        const trajectory = new THREE.Line(statesGeom, mLine);
+        scene.add(trajectory);
+        // State Visualization : Points
+        const mPoints = new THREE.PointsMaterial({ color: 0x888888, size: 3, sizeAttenuation: false });
+        const points = new THREE.Points(statesGeom, mPoints);
+        scene.add(points);
+        // State Visualization : Orientation
+        states.map(state => scene.add(new THREE.ArrowHelper(
+          new THREE.Vector3(1, 0, 0).applyMatrix4(getRotationMatrixFromState(state)),
+          new THREE.Vector3(state.x, state.y, state.z),
+          0.5,
+          0xff8888
+        )));
+        // State Visualization : Drone Mesh for Animation
         const drone = new THREE.Mesh(droneGeom, droneMaterial);
         drone.name = "drone";
         scene.add(drone);

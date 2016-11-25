@@ -58,10 +58,10 @@ class TrajectoryOptimizationController < ApplicationController
   end
 
   def refine_states(states)
-    bias_pos, bias_mat = state_to_pos_n_rot(states[0])
+    bias_pos, _ = state_to_position_and_rotation(states[0])
     bias_mat = Geo3d::Matrix.rotation_z states[0]["rz"].degrees
     states.map do |state|
-      pos, mat = state_to_pos_n_rot(state)
+      pos, mat = state_to_position_and_rotation(state)
       refined_pos = bias_mat.inverse * (pos - bias_pos)
       refined_mat = bias_mat.inverse * mat
       rx, ry, rz = matrix_to_euler(refined_mat)

@@ -36,8 +36,8 @@ class ApplicationController < ActionController::Base
     (0...states.length-1).map do |i|
       curr_state, next_state, timestep_in_sec = states[i], states[i+1], timestep / 1000.0
 
-      curr_pos, curr_mat = state_to_pos_n_rot(curr_state)
-      next_pos, next_mat = state_to_pos_n_rot(next_state)
+      curr_pos, curr_mat = state_to_position_and_rotation(curr_state)
+      next_pos, next_mat = state_to_position_and_rotation(next_state)
 
       local_velocity = curr_mat.inverse * (next_pos - curr_pos) / timestep_in_sec
       rotation_diff = curr_mat.inverse * next_mat
@@ -50,10 +50,10 @@ class ApplicationController < ActionController::Base
 
       {
         :t   => curr_state["t"],
-        :dx  => clip(local_velocity.x, 15.0), # Will convert into Roll in client
-        :dy  => clip(local_velocity.y, 15.0), # Will convert into Pitch in client
-        :dz  => clip(local_velocity.z,  4.0), # Will convert into Throttle in client
-        :drz => clip(rz_diff.to_degrees / timestep_in_sec, 100.0), # Will convert into Yaw in client
+        :dx  => clip(local_velocity.x, 15.0), # Will be converted into Roll in client
+        :dy  => clip(local_velocity.y, 15.0), # Will be converted into Pitch in client
+        :dz  => clip(local_velocity.z,  4.0), # Will be converted into Throttle in client
+        :drz => clip(rz_diff.to_degrees / timestep_in_sec, 100.0), # Will be converted into Yaw in client
       }
     end
   end
@@ -62,16 +62,16 @@ class ApplicationController < ActionController::Base
     diff_states.map do |diff_state|
       {
         :t   => diff_state["t"],
-        :dx  => normalized_clip(diff_state["dx"],   15.0), # Will convert into Roll in client
-        :dy  => normalized_clip(diff_state["dy"],   15.0), # Will convert into Pitch in client
-        :dz  => normalized_clip(diff_state["dz"],    4.0), # Will convert into Throttle in client
-        :drz => normalized_clip(diff_state["drz"], 100.0), # Will convert into Yaw in client
+        :dx  => normalized_clip(diff_state["dx"],   15.0), # Will be converted into Roll in client
+        :dy  => normalized_clip(diff_state["dy"],   15.0), # Will be converted into Pitch in client
+        :dz  => normalized_clip(diff_state["dz"],    4.0), # Will be converted into Throttle in client
+        :drz => normalized_clip(diff_state["drz"], 100.0), # Will be converted into Yaw in client
       }
     end
   end
 
   ## Matrix Calculation Helpers ##
-  def state_to_pos_n_rot(state)
+  def state_to_position_and_rotation(state)
     pos = Geo3d::Vector.new state["x"], state["y"], state["z"]
     mat = Geo3d::Matrix.identity
     mat *= Geo3d::Matrix.rotation_x state["rx"].degrees
@@ -81,7 +81,7 @@ class ApplicationController < ActionController::Base
   end
 
   def matrix_to_euler(matrix)
-    quaternion = matrix2quaternion matrix
+    quaternion = matrix_to_quaternion matrix
     x, y, z, w = quaternion.x, quaternion.y, quaternion.z, quaternion.w
     rx = Math::atan( (2 * (w * x + y * z)) / (w**2 - x**2 - y**2 + z**2) )
     ry = Math::asin( -2 * (x*z - w*y) )
@@ -89,12 +89,11 @@ class ApplicationController < ActionController::Base
     return rx.to_degrees, ry.to_degrees, rz.to_degrees
   end
 
-  def matrix2quaternion (m)
-
-    next_index = [1, 2, 0]
-    trace = m[0,0] + m[1,1] + m[2,2]
+  def matrix_to_quaternion (m)
     q = [0, 0, 0, 0]
+    next_index = [1, 2, 0]
 
+    trace = m[0,0] + m[1,1] + m[2,2]
     if trace > 0.0
       s = Math.sqrt( trace + 1.0 )
       q[0] = ( s * 0.5 )
@@ -102,7 +101,6 @@ class ApplicationController < ActionController::Base
       q[1] = ( m[1,2] - m[2,1] ) * s
       q[2] = ( m[2,0] - m[0,2] ) * s
       q[3] = ( m[0,1] - m[1,0] ) * s
-
     else
       i = 0
       i = 1 if m[1,1] > m[0,0]

@@ -108,19 +108,19 @@
       const droneMaterial = new THREE.MeshBasicMaterial({ color: 0x02c002, side: THREE.DoubleSide, vertexColors: THREE.FaceColors });
       const droneGeom = new THREE.Geometry();
       droneGeom.vertices.push(
-          new THREE.Vector3( 0.2, 0.0, 0.0),
-          new THREE.Vector3(-0.1, 0.1, 0.0),
-          new THREE.Vector3( 0.0, 0.0, 0.0),
-          new THREE.Vector3(-0.1,-0.1, 0.0),
-          new THREE.Vector3( 0.0, 0.0,0.05)
+        new THREE.Vector3( 0.2, 0.0, 0.0),
+        new THREE.Vector3(-0.1, 0.1, 0.0),
+        new THREE.Vector3( 0.0, 0.0, 0.0),
+        new THREE.Vector3(-0.1,-0.1, 0.0),
+        new THREE.Vector3( 0.0, 0.0,0.05)
       );
       droneGeom.faces.push(
-          new THREE.Face3(0, 1, 2),
-          new THREE.Face3(2, 3, 0),
-          new THREE.Face3(4, 0, 1),
-          new THREE.Face3(4, 1, 2),
-          new THREE.Face3(4, 2, 3),
-          new THREE.Face3(4, 3, 0)
+        new THREE.Face3(0, 1, 2),
+        new THREE.Face3(2, 3, 0),
+        new THREE.Face3(4, 0, 1),
+        new THREE.Face3(4, 1, 2),
+        new THREE.Face3(4, 2, 3),
+        new THREE.Face3(4, 3, 0)
       );
       droneGeom.faces.map(face => face.color.setRGB(Math.random(), Math.random(), Math.random()));
 
@@ -139,7 +139,7 @@
         0.5,
         0xff8888
       )));
-      // Reference Drone Mesh for Animation
+      // Reference State Visualization : Drone Mesh for Animation
       const refDrone = new THREE.Mesh(droneGeom, droneMaterial);
       refDrone.name = "ref_drone";
       scene.add(refDrone);
