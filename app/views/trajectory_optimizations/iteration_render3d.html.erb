@@ -20,17 +20,40 @@
       return mat;
     };
 
-    const serializeTimelineData = function(refStates, simStates) {
+    const serializeToTimelineData = function(statesMap) {
+      const serialized = {
+        duration: Math.max.apply(null, Object.keys(statesMap).map(key => statesMap[key][statesMap[key].length - 1].t)) / 1000.0,
+        channels: {},
+      };
+      Object.keys(statesMap).forEach(key => {
+        const states = statesMap[key];
+        serialized.channels[key + '.position'] = {
+          times: states.map(state => state.t / 1000.0),
+          values: states.map(state => [state.x, state.y, state.z]).reduce((a, b) => a.concat(b)),
+        };
+        serialized.channels[key + '.quaternion'] = {
+          times: states.map(state => state.t / 1000.0),
+          values: states.map(state => {
+            const quaternion = new THREE.Quaternion();
+            quaternion.setFromRotationMatrix(getRotationMatrixFromState(state));
+            return [quaternion.x, quaternion.y, quaternion.z, quaternion.w]
+          }).reduce((a, b) => a.concat(b)),
+        };
+      });
+      return serialized;
+    };
+
+    const serializeTimelineData = function(states, simStates) {
       return {
-        duration: refStates[refStates.length - 1].t / 1000.0,
+        duration: states[states.length - 1].t / 1000.0,
         channels: {
           "ref_drone.position": {
-            times: refStates.map(state => state.t / 1000.0),
-            values: refStates.map(state => [state.x, state.y, state.z]).reduce((a, b) => a.concat(b)),
+            times: states.map(state => state.t / 1000.0),
+            values: states.map(state => [state.x, state.y, state.z]).reduce((a, b) => a.concat(b)),
           },
           "ref_drone.quaternion": {
-            times: refStates.map(state => state.t / 1000.0),
-            values: refStates.map(state => {
+            times: states.map(state => state.t / 1000.0),
+            values: states.map(state => {
               const quaternion = new THREE.Quaternion();
               quaternion.setFromRotationMatrix(getRotationMatrixFromState(state));
               return [quaternion.x, quaternion.y, quaternion.z, quaternion.w]
@@ -159,14 +182,15 @@
           initialValue: [ 0, 0, 0, 1 ],
           interpolation: THREE.InterpolateLinear
         });
+        return drone.name;
       };
 
-      registerTrack('ref', 0xffff00, refStates);
-      registerTrack('sim', 0x00ffff, simStates);
+      const refTrackName = registerTrack('ref', 0xffff00, refStates);
+      const simTrackName = registerTrack('sim', 0x00ffff, simStates);
 
       timelineController = new THREE.TimelinerController(scene, tracks, render);
       new Timeliner(timelineController);
-      timelineController.deserialize(serializeTimelineData(refStates, simStates));
+      timelineController.deserialize(serializeToTimelineData({ [refTrackName]: refStates, [simTrackName]: simStates }));
     };
 
     const render = function () {
