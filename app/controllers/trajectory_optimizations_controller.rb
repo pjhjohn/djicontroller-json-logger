@@ -49,8 +49,8 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
     @optimization = TrajectoryOptimization.find(params[:id])
     @iteration_id = params[:iteration_id].to_i
 
-    @refined_reference = refine_states(objectify_json(@optimization.episode.states)).to_json
-    @refined_response  = refine_states(objectify_json(@optimization.simulator_log_list)[@iteration_id]).to_json
+    @refined_ref_states = refine_states(objectify_json(@optimization.episode.states)).to_json
+    @refined_sim_states = refine_states(objectify_json(@optimization.simulator_log_list)[@iteration_id]).to_json
 
     respond_to do |format|
       format.html # iteration_show.html.erb
@@ -62,20 +62,12 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
     @optimization = TrajectoryOptimization.find(params[:id])
     @iteration_id = params[:iteration_id].to_i
 
-    @refined_reference = refine_states(objectify_json(@optimization.episode.states)).to_json
-    @refined_response  = refine_states(objectify_json(@optimization.simulator_log_list)[@iteration_id]).to_json
-    @differences = differences_between(objectify_json(@refined_reference), objectify_json(@refined_response)).map do |difference|
-      rx, ry, rz = matrix_to_euler(difference[:rotation])
-      {
-        :t => difference[:t],
-        :x => difference[:position].x,
-        :y => difference[:position].y,
-        :z => difference[:position].z,
-        :rx => rx,
-        :ry => ry,
-        :rz => rz,
-      }
-    end.to_json
+    @refined_ref_states = refine_states(objectify_json(@optimization.episode.states)).to_json
+    @refined_iter_states = refine_states(objectify_json(@optimization.states_list)[@iteration_id]).to_json
+    @refined_sim_states = refine_states(objectify_json(@optimization.simulator_log_list)[@iteration_id]).to_json
+
+    @differences = differences_between(objectify_json(@refined_ref_states), objectify_json(@refined_sim_states)).to_json
+    @updated_iter_states = refine_states(update_states(objectify_json(@optimization.states_list)[@iteration_id], objectify_json(@differences))).to_json
 
     respond_to do |format|
       format.html # iteration_render3d.html.erb

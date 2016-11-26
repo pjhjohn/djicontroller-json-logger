@@ -2,15 +2,16 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   # protect_from_forgery with: :exception
-  @@const = {
+  @@const = OpenStruct.new({
     :position => 1.0, # Constant for scaling position difference
     :rotation => 1.0, # Constant for scaling rotation difference
-    :relative => 0.5, # Blending position & rotation scores in [0, 1]. 1 for position-only, 0 for rotation-only
-  }
+    :mixratio => 0.5, # Blending position & rotation scores in [0, 1]. 1 for position-only, 0 for rotation-only
+    :update_damp => 0.8, # Updating Damping factor in [0, 1]. 0 for not update, 1 for applying entire difference
+  })
 
   ## Alias functions for episode data update ##
   def states_to_commands(states, timestep)
-    diff_states = objectify_json(states_to_diff_states(states, timestep).to_json)
+    diff_states = objectify_json(states_to_diff_states(refine_states(states), timestep).to_json)
     commands = objectify_json(diff_states_to_commands(diff_states).to_json)
   end
 
@@ -41,11 +42,11 @@ class ApplicationController < ActionController::Base
     (0...states.length-1).map do |i|
       curr_state, next_state, timestep_in_sec = states[i], states[i+1], timestep / 1000.0
 
-      curr_pos, curr_mat = state_to_position_and_rotation(curr_state)
-      next_pos, next_mat = state_to_position_and_rotation(next_state)
+      curr_pos, curr_rot = state_to_position_and_rotation(curr_state)
+      next_pos, next_rot = state_to_position_and_rotation(next_state)
 
-      local_velocity = curr_mat.inverse * (next_pos - curr_pos) / timestep_in_sec
-      rotation_diff = curr_mat.inverse * next_mat
+      local_velocity = curr_rot.inverse * (next_pos - curr_pos) / timestep_in_sec
+      rotation_diff = curr_rot.inverse * next_rot
       global_x_axis = Geo3d::Vector.new 1, 0, 0
       diff_x_axis = rotation_diff * global_x_axis
       rz_diff = Math.acos(diff_x_axis.normalize.dot global_x_axis)
@@ -73,14 +74,39 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # States Refinements
+  def refine_states(states)
+    bias_pos, _ = state_to_position_and_rotation(states[0])
+    bias_mat = Geo3d::Matrix.rotation_z states[0]["rz"].degrees
+    states.map do |state|
+      pos, mat = state_to_position_and_rotation(state)
+      refined_pos = bias_mat.inverse * (pos - bias_pos)
+      refined_mat = bias_mat.inverse * mat
+      state_from_position_and_rotation state["t"], refined_pos, refined_mat
+    end
+  end
+
   ## Matrix Calculation Helpers ##
+  def state_from_position_and_rotation(t, position, rotation)
+    rx, ry, rz = matrix_to_euler(rotation)
+    {
+      "t" => t,
+      "x" => position.x,
+      "y" => position.y,
+      "z" => position.z,
+      "rx" => rx,
+      "ry" => ry,
+      "rz" => rz,
+    }
+  end
+
   def state_to_position_and_rotation(state)
     pos = Geo3d::Vector.new state["x"], state["y"], state["z"]
-    mat = Geo3d::Matrix.identity
-    mat *= Geo3d::Matrix.rotation_x state["rx"].degrees
-    mat *= Geo3d::Matrix.rotation_y state["ry"].degrees
-    mat *= Geo3d::Matrix.rotation_z state["rz"].degrees
-    return pos, mat
+    rot = Geo3d::Matrix.identity
+    rot *= Geo3d::Matrix.rotation_x state["rx"].degrees
+    rot *= Geo3d::Matrix.rotation_y state["ry"].degrees
+    rot *= Geo3d::Matrix.rotation_z state["rz"].degrees
+    return pos, rot
   end
 
   def matrix_to_euler(matrix)

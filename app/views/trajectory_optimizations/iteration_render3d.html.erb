@@ -120,11 +120,15 @@
 
     const initScene = function() {
       // noinspection JSAnnotator
-      const refStates = <%= raw @refined_reference %>;
+      const refStates = <%= raw @refined_ref_states %>;
       // noinspection JSAnnotator
-      const simStates = <%= raw @refined_response %>;
+      const simStates = <%= raw @refined_sim_states %>;
+      // noinspection JSAnnotator
+      const iterStates = <%= raw @refined_iter_states %>;
       // noinspection JSAnnotator
       const diffStates = <%= raw @differences %>;
+      // noinspection JSAnnotator
+      const updatedIterStates = <%= raw @updated_iter_states %>;
       const droneGeom = new THREE.Geometry();
       droneGeom.vertices.push(
         new THREE.Vector3( 0.2, 0.0, 0.0),
@@ -189,11 +193,19 @@
 
       const refTrackName = registerTrack('ref', 0xffff00, refStates);
       const simTrackName = registerTrack('sim', 0x00ffff, simStates);
+      const iterTrackName = registerTrack('iter', 0xffffff, iterStates);
       const diffTrackName = registerTrack('diff', 0xff00ff, diffStates);
+      const updatedIterTrackName = registerTrack('updated_iter', 0x22ffcc, updatedIterStates);
 
       timelineController = new THREE.TimelinerController(scene, tracks, render);
       new Timeliner(timelineController);
-      timelineController.deserialize(serializeToTimelineData({ [refTrackName]: refStates, [simTrackName]: simStates, [diffTrackName]: diffStates }));
+      timelineController.deserialize(serializeToTimelineData({
+        [refTrackName]: refStates,
+        [simTrackName]: simStates,
+        [iterTrackName]: iterStates,
+        [diffTrackName]: diffStates,
+        [updatedIterTrackName]: updatedIterStates,
+      }));
     };
 
     const render = function () {

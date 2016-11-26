@@ -39,18 +39,16 @@ class TrajectoryOptimizationController < ApplicationController
     commands_list       = objectify_json(@optimization.commands_list)
     simulator_log_list  = objectify_json(@optimization.simulator_log_list)
 
-    # Calculate difference factor from current states & simulator_log
-    differences = differences_between states_list[current], simulator_log_list[current]
+    refined_ref_states  = refine_states(objectify_json(@optimization.episode.states))
+    refined_iter_states = refine_states(states_list[current])
+    refined_sim_states  = refine_states(simulator_log_list[current])
 
-    # Calculate update difference of current states
-
-    delta_states = get_delta_states_to_update(states_list[current], distances)
+    differences = differences_between(refined_ref_states, refined_sim_states)
+    updated_iter_states = refine_states(update_states(states_list[current], differences))
 
     # Next Iteration : update states & commands
-    if current < max - 1
-      @optimization.states_list = states_list.push(update_states(states_list[current], delta_states)).to_json # TODO : update from delta_states
-      @optimization.commands_list = commands_list.push(states_to_commands(states_list[current], timestep)).to_json
-    end
+    @optimization.states_list = states_list.push(updated_iter_states).to_json if current < max - 1
+    @optimization.commands_list = commands_list.push(states_to_commands(updated_iter_states, timestep)).to_json
     @optimization.current_iteration_index = current + 1
     @optimization.save
 
@@ -58,28 +56,29 @@ class TrajectoryOptimizationController < ApplicationController
     render :json => objectify_optimization_to_feedback_form(@optimization)
   end
 
-  # Difference from reference state to simulator state
+  # Difference from simulator state to reference state
   def difference_between(ref_state, sim_state)
     ref_position, ref_rotation = state_to_position_and_rotation(ref_state)
     sim_position, sim_rotation = state_to_position_and_rotation(sim_state)
     {
       :t => ref_state["t"],
-      :position => sim_position - ref_position,
-      :rotation => ref_rotation.inverse * sim_rotation,
+      :position => ref_position - sim_position,
+      :rotation => sim_rotation.inverse * ref_rotation,
     }
   end
 
   def differences_between(ref_states, sim_states)
     # TODO : sim_states.length => ref_states.length
     (0...sim_states.length).map do |i|
-      difference_between ref_states[i], sim_states[i]
+      difference = difference_between ref_states[i], sim_states[i]
+      state_from_position_and_rotation difference[:t], difference[:position], difference[:rotation]
     end
   end
 
   # Distance as score blending position & rotation SQUARED difference factors
   def difference_to_distance(difference)
     @@const.mixratio * @@const.position * difference.position.length_squared +                                  # ||dP||^2
-    (1 - @@const.mixratio) * @@const.rotation * (Geo3d::Quaternion.from_matrix(difference.rotation).angle ** 2) # ||dR||^2 angle in radians
+    (1 - @@const.mixratio) * @@const.rotation * (matrix_to_quaternion(difference.rotation).angle ** 2) # ||dR||^2 angle in radians
   end
 
   # RMS (S from difference_to_distance)
@@ -89,34 +88,26 @@ class TrajectoryOptimizationController < ApplicationController
     Math.sqrt(score / ref_states.length)
   end
 
-  def get_delta_states_to_update(states, distances)
-    nil # TODO : implement this
+  def update_state(iter_state, difference)
+    iter_state_pos, iter_state_rot = state_to_position_and_rotation(iter_state)
+    difference_pos, difference_rot = state_to_position_and_rotation(difference)
+
+    iter_state_quaternion = matrix_to_quaternion(iter_state_rot)
+    difference_quaternion = matrix_to_quaternion(difference_rot)
+
+    updated_pos = iter_state_pos + difference_pos * @@const.update_damp
+    updated_rot = (iter_state_quaternion + difference_quaternion * @@const.update_damp).to_matrix
+
+    state_from_position_and_rotation iter_state["t"], updated_pos, updated_rot
   end
 
-  def update_states(states, delta_states)
-    states # TODO : implement this
-  end
-
-  # States Refinements
-  def refine_states(states)
-    bias_pos, _ = state_to_position_and_rotation(states[0])
-    bias_mat = Geo3d::Matrix.rotation_z states[0]["rz"].degrees
-    states.map do |state|
-      pos, mat = state_to_position_and_rotation(state)
-      refined_pos = bias_mat.inverse * (pos - bias_pos)
-      refined_mat = bias_mat.inverse * mat
-      rx, ry, rz = matrix_to_euler(refined_mat)
-      {
-        :t => state["t"],
-        :x => refined_pos.x,
-        :y => refined_pos.y,
-        :z => refined_pos.z,
-        :rx => rx,
-        :ry => ry,
-        :rz => rz,
-        :refined_pos => refined_pos,
-        :refined_mat => refined_mat,
-      }
+  def update_states(iter_states, differences)
+    (0...iter_states.length).map do |i|
+      if i < differences.length
+        update_state(iter_states[i], differences[i])
+      else
+        iter_states[i]
+      end
     end
   end
 end
