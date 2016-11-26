@@ -1,4 +1,3 @@
-<% time_param = "t" if local_assigns[:time_param].nil? %>
 <% if data == "null" or JSON.parse(data).empty? %>
   <h6>Chart</h6>
   <h2>Empty Data</h2>
@@ -13,7 +12,6 @@
     //noinspection JSAnnotator
     const keys = <%= raw keys %>;
     const listByKey = (datum, key) => datum.map(obj => obj[key]);
-    const time_param = "<%= time_param %>";
     let displayLegend = false;
     const labels = {
       x :  "x",  y:  "y",  z:  "z",
@@ -39,7 +37,7 @@
           pointHoverBackgroundColor: colors[key],
           pointHoverBorderColor: colors.white,
           data: datum.map(obj => ({
-            x: obj[time_param],
+            x: obj["t"],
             y: obj[key]
           })),
           yAxisID: ['rotation', 'position'][+(["rx", "ry", "rz", "drz"].indexOf(key) == -1)],
