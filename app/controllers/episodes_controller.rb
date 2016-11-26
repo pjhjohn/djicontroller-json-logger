@@ -4,7 +4,7 @@ class EpisodesController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @episodes.map{|episode| serialize_episode(episode)} }
+      format.json { render json: @episodes.map{|episode| objectify_episode(episode)} }
     end
   end
 
@@ -13,7 +13,7 @@ class EpisodesController < ApplicationController
 
     respond_to do |format|
       format.html # new.html.erb
-      format.json { render json: serialize_episode(@episode) }
+      format.json { render json: objectify_episode(@episode) }
     end
   end
 
@@ -22,7 +22,7 @@ class EpisodesController < ApplicationController
 
     respond_to do |format|
       format.html # new_with_control_points.html.erb
-      format.json { render json: serialize_episode(@episode) }
+      format.json { render json: objectify_episode(@episode) }
     end
   end
 
@@ -30,7 +30,7 @@ class EpisodesController < ApplicationController
     @episode = Episode.new
     @episode.name = params[:name]
     @episode.timestep = clip(params[:timestep].to_i, 80, 120) unless params[:timestep].nil?
-    @episode.states = JSON.parse(params[:states]).to_json # Checks JSON validity during conversion
+    @episode.states = objectify_json(params[:states]).to_json # Checks JSON validity during conversion
 
     respond_to do |format|
       if @episode.save
@@ -38,7 +38,7 @@ class EpisodesController < ApplicationController
         update_episode_commands(@episode)
         flash[:notice] = 'Episode was successfully created.'
         format.html { redirect_to(@episode) }
-        format.json { render json: serialize_episode(@episode), status: :created, location: @episode }
+        format.json { render json: objectify_episode(@episode), status: :created, location: @episode }
       else
         format.html { render action: 'new' }
         format.json { render json: @episode.errors, status: :unprocessable_entity }
@@ -50,7 +50,7 @@ class EpisodesController < ApplicationController
     @episode = Episode.new
     @episode.name = params[:name]
     @episode.timestep = clip(params[:timestep].to_i, 80, 120) unless params[:timestep].nil?
-    @episode.control_points = JSON.parse(params[:control_points]).to_json # Checks JSON validity during conversion
+    @episode.control_points = objectify_json(params[:control_points]).to_json # Checks JSON validity during conversion
 
     respond_to do |format|
       if @episode.save
@@ -59,34 +59,34 @@ class EpisodesController < ApplicationController
         update_episode_commands(@episode)
         flash[:notice] = 'Episode was successfully created.'
         format.html { redirect_to(@episode) }
-        format.json { render json: serialize_episode(@episode), status: :created, location: @episode }
+        format.json { render json: objectify_episode(@episode), status: :created, location: @episode }
       else
         format.html { render action: 'new' }
         format.json { render json: @episode.errors, status: :unprocessable_entity }
       end
     end
   end
-  
+
   def show
     @episode = Episode.find(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: serialize_episode(@episode) }
+      format.json { render json: objectify_episode(@episode) }
     end
   end
-  
+
   def edit
     @episode = Episode.find(params[:id])
   end
-  
+
   def update
     @episode = Episode.find(params[:id])
 
     episode_params = Hash.new
     # episode_params[:name] = params[:name] unless params[:name].nil?
     # episode_params[:timestep] = clip(params[:timestep].to_i, 80, 120) unless params[:timestep].nil?
-    # episode_params[:states] = JSON.parse(params[:states]).to_json # Checks JSON validity during conversion
+    # episode_params[:states] = deserialize(params[:states]).to_json # Checks JSON validity during conversion
 
     respond_to do |format|
       if @episode.update(episode_params)
@@ -105,7 +105,7 @@ class EpisodesController < ApplicationController
   def destroy
     @episode = Episode.find(params[:id])
     @episode.destroy
-  
+
     respond_to do |format|
       format.html { redirect_to(episodes_url) }
       format.json { head :ok }
@@ -119,9 +119,9 @@ class EpisodesController < ApplicationController
       if @episode.save
         flash[:notice] = 'Episode was successfully duplicated.'
         format.html { redirect_to(@episode) }
-        format.json { render json: serialize_episode(@episode), status: :created, location: @episode }
+        format.json { render json: objectify_episode(@episode), status: :created, location: @episode }
       else
-        format.html { render action: 'new' }
+        format.html { redirect_to :back }
         format.json { render json: @episode.errors, status: :unprocessable_entity }
       end
     end
@@ -132,7 +132,7 @@ class EpisodesController < ApplicationController
 
     respond_to do |format|
       format.html # render.html.erb
-      format.json { render json: serialize_episode(@episode) }
+      format.json { render json: objectify_episode(@episode) }
     end
   end
 
@@ -161,7 +161,7 @@ class EpisodesController < ApplicationController
   def update_simulator_log # Assume accept only json request from android client
     @episode = Episode.find(params[:id])
     episode_params = Hash.new
-    episode_params[:simulator_logs] = JSON.parse(@episode.simulator_logs).push(params[:events]).to_json unless params[:events].nil?
+    episode_params[:simulator_logs] = objectify_json(@episode.simulator_logs).push(params[:events]).to_json unless params[:events].nil?
 
     respond_to do |format|
       if @episode.update(episode_params)
@@ -177,17 +177,17 @@ class EpisodesController < ApplicationController
 
   ## Alias shortcut functions for updating episode data ##
   def update_episode_states(episode)
-    episode.states = control_points_to_states(JSON.parse(episode.control_points), episode.timestep).to_json
+    episode.states = control_points_to_states(objectify_json(episode.control_points), episode.timestep).to_json
     episode.save
   end
 
   def update_episode_diff_states(episode)
-    episode.diff_states = states_to_diff_states(JSON.parse(episode.states), episode.timestep).to_json
+    episode.diff_states = states_to_diff_states(objectify_json(episode.states), episode.timestep).to_json
     episode.save
   end
 
   def update_episode_commands(episode)
-    episode.commands = diff_states_to_commands(JSON.parse(episode.diff_states)).to_json
+    episode.commands = diff_states_to_commands(objectify_json(episode.diff_states)).to_json
     episode.save
   end
 end

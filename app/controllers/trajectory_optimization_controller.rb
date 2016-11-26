@@ -12,15 +12,15 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization.episode_id = @episode.id
 
     # Initialization of TrajectoryOptimization Environments
-    @optimization.states_list = [JSON.parse(@episode.states)].to_json
-    @optimization.commands_list = [JSON.parse(@episode.commands)].to_json
+    @optimization.states_list = [objectify_json(@episode.states)].to_json
+    @optimization.commands_list = [objectify_json(@episode.commands)].to_json
     @optimization.max_iteration_count = params[:max_iteration_count] unless params[:max_iteration_count].nil?
 
     # Save
     @optimization.save
 
     # Construct Feedback Object & Return with JSON format
-    render :json => build_optimization_feedback(@optimization)
+    render :json => objectify_optimization_to_feedback_form(@optimization)
   end
 
   # params[:id] is TrajectoryOptimization ID
@@ -29,68 +29,84 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization = TrajectoryOptimization.find(params[:id])
 
     # Push to update simulator_log_list from client
-    @optimization.simulator_log_list = JSON.parse(@optimization.simulator_log_list).push(params[:events]).to_json
+    @optimization.simulator_log_list = objectify_json(@optimization.simulator_log_list).push(params[:events]).to_json
 
     # Instantiate data for current iteration
     timestep            = @optimization.episode.timestep
     current             = @optimization.current_iteration_index
     max                 = @optimization.max_iteration_count
-    states_list         = JSON.parse(@optimization.states_list)
-    commands_list       = JSON.parse(@optimization.commands_list)
-    simulator_log_list  = JSON.parse(@optimization.simulator_log_list)
+    states_list         = objectify_json(@optimization.states_list)
+    commands_list       = objectify_json(@optimization.commands_list)
+    simulator_log_list  = objectify_json(@optimization.simulator_log_list)
 
-    # Calculate difference factor from current states & simulator_log
-    distances = get_distances(states_list[current], simulator_log_list[current])
+    refined_ref_states  = refine_states(objectify_json(@optimization.episode.states))
+    refined_sim_states  = refine_states(simulator_log_list[current])
 
-    # Calculate update difference of current states
-    delta_states = get_delta_states_to_update(states_list[current], distances)
+    differences = differences_between(refined_ref_states, refined_sim_states)
+    updated_iter_states = refine_states(update_states(states_list[current], differences))
 
     # Next Iteration : update states & commands
-    if current < max - 1
-      @optimization.states_list = states_list.push(update_states(states_list[current], delta_states)).to_json # TODO : update from delta_states
-      @optimization.commands_list = commands_list.push(states_to_commands(states_list[current], timestep)).to_json
-    end
+    @optimization.states_list = states_list.push(updated_iter_states).to_json if current < max - 1
+    @optimization.commands_list = commands_list.push(states_to_commands(updated_iter_states, timestep)).to_json if current < max - 1
     @optimization.current_iteration_index = current + 1
     @optimization.save
 
     # Construct Feedback Object & Return with JSON format
-    render :json => build_optimization_feedback(@optimization)
+    render :json => objectify_optimization_to_feedback_form(@optimization)
   end
 
-  def get_distance(state1, state2)
-    0 # TODO : implement this
+  # Difference from simulator state to reference state
+  def difference_between(ref_state, sim_state)
+    ref_position, ref_rotation = state_to_position_and_rotation(ref_state)
+    sim_position, sim_rotation = state_to_position_and_rotation(sim_state)
+    {
+      :t => ref_state["t"],
+      :position => ref_position - sim_position,
+      :rotation => sim_rotation.inverse * ref_rotation,
+    }
   end
 
-  def get_distances(states, simulator_log)
-    # Assume states & simulator_log have same length & aligned
-    (1..states.length).map do |i|
-      get_distance(states[i], simulator_log[i])
+  def differences_between(ref_states, sim_states)
+    # TODO : sim_states.length => ref_states.length
+    (0...sim_states.length).map do |i|
+      difference = difference_between ref_states[i], sim_states[i]
+      state_from_position_and_rotation difference[:t], difference[:position], difference[:rotation]
     end
   end
 
-  def error_score(states, simulator_log)
+  # Distance as score blending position & rotation SQUARED difference factors
+  def difference_to_distance(difference)
+    @@const.mixratio * @@const.position * difference.position.length_squared +                                  # ||dP||^2
+    (1 - @@const.mixratio) * @@const.rotation * (matrix_to_quaternion(difference.rotation).angle ** 2) # ||dR||^2 angle in radians
+  end
+
+  # RMS (S from difference_to_distance)
+  def error_score(ref_states, sim_states)
     score = 0
-    get_distances(states, simulator_log).each { |distance| score += distance }
-    score
+    differences_between(ref_states, sim_states).each { |difference| score += difference_to_distance(distance) }
+    Math.sqrt(score / ref_states.length)
   end
 
-  def get_delta_states_to_update(states, distances)
-    nil # TODO : implement this
+  def update_state(iter_state, difference)
+    iter_state_pos, iter_state_rot = state_to_position_and_rotation(iter_state)
+    difference_pos, difference_rot = state_to_position_and_rotation(difference)
+
+    iter_state_quaternion = matrix_to_quaternion(iter_state_rot)
+    difference_quaternion = matrix_to_quaternion(difference_rot)
+
+    updated_pos = iter_state_pos + difference_pos * @@const.update_damp
+    updated_rot = (iter_state_quaternion + difference_quaternion * @@const.update_damp).to_matrix
+
+    state_from_position_and_rotation iter_state["t"], updated_pos, updated_rot
   end
 
-  def update_states(states, delta_states)
-    states # TODO : implement this
-  end
-
-  def build_optimization_feedback(optimization)
-    current, max = optimization.current_iteration_index, optimization.max_iteration_count
-    {
-      :id => optimization.id,
-      :current_iteration_index => current,
-      :timestep => optimization.episode.timestep,
-      :commands => current >= max ? [] : JSON.parse(optimization.commands_list)[current], # Empty Commands considered as termination
-      :success => true, # TODO : implement this
-      :error_message => "Error Message!!" # TODO : implement this
-    }
+  def update_states(iter_states, differences)
+    (0...iter_states.length).map do |i|
+      if i < differences.length
+        update_state(iter_states[i], differences[i])
+      else
+        iter_states[i]
+      end
+    end
   end
 end

@@ -20,17 +20,40 @@
       return mat;
     };
 
-    const serializeTimelineData = function(refStates, simStates) {
+    const serializeToTimelineData = function(statesMap) {
+      const serialized = {
+        duration: Math.max.apply(null, Object.keys(statesMap).map(key => statesMap[key][statesMap[key].length - 1].t)) / 1000.0,
+        channels: {},
+      };
+      Object.keys(statesMap).forEach(key => {
+        const states = statesMap[key];
+        serialized.channels[key + '.position'] = {
+          times: states.map(state => state.t / 1000.0),
+          values: states.map(state => [state.x, state.y, state.z]).reduce((a, b) => a.concat(b)),
+        };
+        serialized.channels[key + '.quaternion'] = {
+          times: states.map(state => state.t / 1000.0),
+          values: states.map(state => {
+            const quaternion = new THREE.Quaternion();
+            quaternion.setFromRotationMatrix(getRotationMatrixFromState(state));
+            return [quaternion.x, quaternion.y, quaternion.z, quaternion.w]
+          }).reduce((a, b) => a.concat(b)),
+        };
+      });
+      return serialized;
+    };
+
+    const serializeTimelineData = function(states, simStates) {
       return {
-        duration: refStates[refStates.length - 1].t / 1000.0,
+        duration: states[states.length - 1].t / 1000.0,
         channels: {
           "ref_drone.position": {
-            times: refStates.map(state => state.t / 1000.0),
-            values: refStates.map(state => [state.x, state.y, state.z]).reduce((a, b) => a.concat(b)),
+            times: states.map(state => state.t / 1000.0),
+            values: states.map(state => [state.x, state.y, state.z]).reduce((a, b) => a.concat(b)),
           },
           "ref_drone.quaternion": {
-            times: refStates.map(state => state.t / 1000.0),
-            values: refStates.map(state => {
+            times: states.map(state => state.t / 1000.0),
+            values: states.map(state => {
               const quaternion = new THREE.Quaternion();
               quaternion.setFromRotationMatrix(getRotationMatrixFromState(state));
               return [quaternion.x, quaternion.y, quaternion.z, quaternion.w]
@@ -58,17 +81,7 @@
       renderer.setSize( window.innerWidth, window.innerHeight );
     };
 
-    const init = function() {
-      // Data
-      // noinspection JSAnnotator
-      const refStates = <%= raw @optimization.episode.states %>;
-      const refStatesGeom = new THREE.Geometry();
-      refStates.map(state => refStatesGeom.vertices.push(new THREE.Vector3(state.x, state.y, state.z)));
-      // noinspection JSAnnotator
-      const simStates = <%= raw JSON.parse(@optimization.simulator_log_list)[@iteration_id].to_json %>;
-      const simStatesGeom = new THREE.Geometry();
-      simStates.map(state => simStatesGeom.vertices.push(new THREE.Vector3(state.x, state.y, state.z)));
-
+    const initConfig = function() {
       // Clock
       clock = new THREE.Clock();
 
@@ -85,16 +98,15 @@
       // ThreeJS Scene & Camera
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 0.1, 1000);
-      camera.up.set(0, 0, 1);
-      camera.position.set(3, 3, 3);
-      camera.lookAt(new THREE.Vector3(0, 0, 0));
+      camera.up.set(0, 1, 0);
+      camera.position.set(5, -1, 5);
 
       // Camera Controls
       cameraControls = new THREE.TrackballControls(camera, renderer.domElement);
-      cameraControls.target.set(0, 0, 0);
+      cameraControls.target.set(5, -1, 0);
 
       // Grid & Axis
-      const gridHelper = new THREE.GridHelper(5, 10);
+      const gridHelper = new THREE.GridHelper(10, 20);
       gridHelper.rotation.setFromRotationMatrix(new THREE.Matrix4().makeRotationX(Math.radians(90)));
       scene.add(gridHelper);
       const axisHelper = new THREE.AxisHelper(2);
@@ -104,100 +116,98 @@
       const light = new THREE.DirectionalLight(0xffffff, 0.55);
       light.position.set(0, 0, 1);
       scene.add(light);
+    };
 
-      // Drone Geometry
-      const droneMaterial = new THREE.MeshBasicMaterial({ color: 0x02c002, side: THREE.DoubleSide, vertexColors: THREE.FaceColors });
+    const initScene = function() {
+      // noinspection JSAnnotator
+      const refStates = <%= raw @refined_ref_states %>;
+      // noinspection JSAnnotator
+      const simStates = <%= raw @refined_sim_states %>;
+      // noinspection JSAnnotator
+      const iterStates = <%= raw @refined_iter_states %>;
+      // noinspection JSAnnotator
+      const diffStates = <%= raw @differences %>;
+      // noinspection JSAnnotator
+      const updatedIterStates = <%= raw @updated_iter_states %>;
       const droneGeom = new THREE.Geometry();
       droneGeom.vertices.push(
-          new THREE.Vector3( 0.2, 0.0, 0.0),
-          new THREE.Vector3(-0.1, 0.1, 0.0),
-          new THREE.Vector3( 0.0, 0.0, 0.0),
-          new THREE.Vector3(-0.1,-0.1, 0.0),
-          new THREE.Vector3( 0.0, 0.0,0.05)
+        new THREE.Vector3( 0.2, 0.0, 0.0),
+        new THREE.Vector3(-0.1, 0.1, 0.0),
+        new THREE.Vector3( 0.0, 0.0, 0.0),
+        new THREE.Vector3(-0.1,-0.1, 0.0),
+        new THREE.Vector3( 0.0, 0.0,0.05)
       );
       droneGeom.faces.push(
-          new THREE.Face3(0, 1, 2),
-          new THREE.Face3(2, 3, 0),
-          new THREE.Face3(4, 0, 1),
-          new THREE.Face3(4, 1, 2),
-          new THREE.Face3(4, 2, 3),
-          new THREE.Face3(4, 3, 0)
+        new THREE.Face3(0, 1, 2),
+        new THREE.Face3(2, 3, 0),
+        new THREE.Face3(4, 0, 1),
+        new THREE.Face3(4, 1, 2),
+        new THREE.Face3(4, 2, 3),
+        new THREE.Face3(4, 3, 0)
       );
       droneGeom.faces.map(face => face.color.setRGB(Math.random(), Math.random(), Math.random()));
 
-      // Reference State Visualization : Trajectory
-      const mRefLine = new THREE.LineBasicMaterial({ color: 0xff8888, linewidth: 1});
-      const refTrajectory = new THREE.Line(refStatesGeom, mRefLine);
-      scene.add(refTrajectory);
-      // Reference State Visualization : Points
-      const mRefPoints = new THREE.PointsMaterial({ color: 0x888888, size: 3, sizeAttenuation: false });
-      const refPoints = new THREE.Points(refStatesGeom, mRefPoints);
-      scene.add(refPoints);
-      // Reference State Visualization : Orientation
-      refStates.map(state => scene.add(new THREE.ArrowHelper(
-        new THREE.Vector3(1, 0, 0).applyMatrix4(getRotationMatrixFromState(state)),
-        new THREE.Vector3(state.x, state.y, state.z),
-        0.5,
-        0xff8888
-      )));
-      // Reference Drone Mesh for Animation
-      const refDrone = new THREE.Mesh(droneGeom, droneMaterial);
-      refDrone.name = "ref_drone";
-      scene.add(refDrone);
+      const tracks = [];
+      const registerTrack = function(name, color, states) {
+        // Geometry
+        const statesGeometry = new THREE.Geometry();
+        states.map(state => statesGeometry.vertices.push(new THREE.Vector3(state.x, state.y, state.z)));
 
-      // Simulation State Visualization : Trajectory
-      const mLine = new THREE.LineBasicMaterial({ color: 0x8888ff, linewidth: 1});
-      const trajectory = new THREE.Line(simStatesGeom, mLine);
-      scene.add(trajectory);
-      // Simulation State Visualization : Points
-      const mPoints = new THREE.PointsMaterial({ color: 0x888888, size: 3, sizeAttenuation: false });
-      const points = new THREE.Points(simStatesGeom, mPoints);
-      scene.add(points);
-      // Simulation State Visualization : Orientation
-      simStates.map(state => scene.add(new THREE.ArrowHelper(
-        new THREE.Vector3(1, 0, 0).applyMatrix4(getRotationMatrixFromState(state)),
-        new THREE.Vector3(state.x, state.y, state.z),
-        0.5,
-        0x8888ff
-      )));
-      // Reference Drone Mesh for Animation
-      const simDrone = new THREE.Mesh(droneGeom, droneMaterial);
-      simDrone.name = "sim_drone";
-      scene.add(simDrone);
+        // Material
+        const trajectoryMaterial = new THREE.LineBasicMaterial({ color: color, linewidth: 1});
+        const pointsMaterial = new THREE.PointsMaterial({ color: color, size: 3, sizeAttenuation: false });
+        const droneMaterial = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, vertexColors: THREE.FaceColors });
 
-      // Timeliner GUI
-      const tracks = [
-        {
+        // Objects
+        const trajectory = new THREE.Line(statesGeometry, trajectoryMaterial);
+        const points = new THREE.Points(statesGeometry, pointsMaterial);
+        const directions = states.map(state => new THREE.ArrowHelper(
+          new THREE.Vector3(1, 0, 0).applyMatrix4(getRotationMatrixFromState(state)),
+          new THREE.Vector3(state.x, state.y, state.z), 0.5, color
+        ));
+        const drone = new THREE.Mesh(droneGeom, droneMaterial);
+        drone.name = name + '_drone';
+        drone.scale.set(1, 1, 1);
+
+        // Scene
+        scene.add(trajectory);
+        scene.add(points);
+        directions.forEach(direction => scene.add(direction));
+        scene.add(drone);
+
+        // Track
+        tracks.push({
           type: THREE.VectorKeyframeTrack,
-          propertyPath: 'ref_drone.position',
+          propertyPath: drone.name + '.position',
           initialValue: [ 0, 0, 0 ],
           interpolation: THREE.InterpolateSmooth
-        },
-        {
+        });
+        tracks.push({
           type: THREE.QuaternionKeyframeTrack,
-          propertyPath: 'ref_drone.quaternion',
+          propertyPath: drone.name + '.quaternion',
           initialValue: [ 0, 0, 0, 1 ],
           interpolation: THREE.InterpolateLinear
-        },
-        {
-          type: THREE.VectorKeyframeTrack,
-          propertyPath: 'sim_drone.position',
-          initialValue: [ 0, 0, 0 ],
-          interpolation: THREE.InterpolateSmooth
-        },
-        {
-          type: THREE.QuaternionKeyframeTrack,
-          propertyPath: 'sim_drone.quaternion',
-          initialValue: [ 0, 0, 0, 1 ],
-          interpolation: THREE.InterpolateLinear
-        }
-      ];
+        });
+        return drone.name;
+      };
+
+      const refTrackName = registerTrack('ref', 0xffff00, refStates);
+      const simTrackName = registerTrack('sim', 0x00ffff, simStates);
+      const iterTrackName = registerTrack('iter', 0xffffff, iterStates);
+      const diffTrackName = registerTrack('diff', 0xff00ff, diffStates);
+      const updatedIterTrackName = registerTrack('updated_iter', 0x22ffcc, updatedIterStates);
+
       timelineController = new THREE.TimelinerController(scene, tracks, render);
       new Timeliner(timelineController);
-      timelineController.deserialize(serializeTimelineData(refStates, simStates));
+      timelineController.deserialize(serializeToTimelineData({
+        [refTrackName]: refStates,
+        [simTrackName]: simStates,
+        [iterTrackName]: iterStates,
+        [diffTrackName]: diffStates,
+        [updatedIterTrackName]: updatedIterStates,
+      }));
     };
 
-    // Render Main Loop
     const render = function () {
       const delta = clock.getDelta();
       requestAnimationFrame(render);
@@ -205,7 +215,8 @@
       renderer.render(scene, camera);
     };
 
-    init();
+    initConfig();
+    initScene();
     render();
   }
 </script>
