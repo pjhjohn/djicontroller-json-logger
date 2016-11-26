@@ -40,7 +40,6 @@ class TrajectoryOptimizationController < ApplicationController
     simulator_log_list  = objectify_json(@optimization.simulator_log_list)
 
     refined_ref_states  = refine_states(objectify_json(@optimization.episode.states))
-    refined_iter_states = refine_states(states_list[current])
     refined_sim_states  = refine_states(simulator_log_list[current])
 
     differences = differences_between(refined_ref_states, refined_sim_states)
@@ -48,7 +47,7 @@ class TrajectoryOptimizationController < ApplicationController
 
     # Next Iteration : update states & commands
     @optimization.states_list = states_list.push(updated_iter_states).to_json if current < max - 1
-    @optimization.commands_list = commands_list.push(states_to_commands(updated_iter_states, timestep)).to_json
+    @optimization.commands_list = commands_list.push(states_to_commands(updated_iter_states, timestep)).to_json if current < max - 1
     @optimization.current_iteration_index = current + 1
     @optimization.save
 
