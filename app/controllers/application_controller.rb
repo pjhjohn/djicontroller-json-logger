@@ -166,4 +166,16 @@ class ApplicationController < ActionController::Base
       :updated_at               => optimization.updated_at,
     }
   end
+
+  def serialize_optimization_feedback(optimization)
+    current, max = optimization.current_iteration_index, optimization.max_iteration_count
+    {
+      :id => optimization.id,
+      :current_iteration_index => current,
+      :timestep => optimization.episode.timestep,
+      :commands => current >= max ? [] : JSON.parse(optimization.commands_list)[current], # Empty Commands considered as termination
+      :success => true, # TODO : implement this
+      :error_message => "Error Message!!" # TODO : implement this
+    }
+  end
 end

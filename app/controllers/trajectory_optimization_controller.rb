@@ -20,7 +20,7 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization.save
 
     # Construct Feedback Object & Return with JSON format
-    render :json => build_optimization_feedback(@optimization)
+    render :json => serialize_optimization_feedback(@optimization)
   end
 
   # params[:id] is TrajectoryOptimization ID
@@ -54,7 +54,7 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization.save
 
     # Construct Feedback Object & Return with JSON format
-    render :json => build_optimization_feedback(@optimization)
+    render :json => serialize_optimization_feedback(@optimization)
   end
 
   def refine_states(states)
@@ -102,17 +102,5 @@ class TrajectoryOptimizationController < ApplicationController
 
   def update_states(states, delta_states)
     states # TODO : implement this
-  end
-
-  def build_optimization_feedback(optimization)
-    current, max = optimization.current_iteration_index, optimization.max_iteration_count
-    {
-      :id => optimization.id,
-      :current_iteration_index => current,
-      :timestep => optimization.episode.timestep,
-      :commands => current >= max ? [] : JSON.parse(optimization.commands_list)[current], # Empty Commands considered as termination
-      :success => true, # TODO : implement this
-      :error_message => "Error Message!!" # TODO : implement this
-    }
   end
 end
