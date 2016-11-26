@@ -10,8 +10,8 @@ class ApplicationController < ActionController::Base
 
   ## Alias functions for episode data update ##
   def states_to_commands(states, timestep)
-    diff_states = JSON.parse(states_to_diff_states(states, timestep).to_json)
-    commands = JSON.parse(diff_states_to_commands(diff_states).to_json)
+    diff_states = objectify_json(states_to_diff_states(states, timestep).to_json)
+    commands = objectify_json(diff_states_to_commands(diff_states).to_json)
   end
 
   ## Episode Data Manipulation ##
@@ -49,9 +49,7 @@ class ApplicationController < ActionController::Base
       global_x_axis = Geo3d::Vector.new 1, 0, 0
       diff_x_axis = rotation_diff * global_x_axis
       rz_diff = Math.acos(diff_x_axis.normalize.dot global_x_axis)
-      if diff_x_axis.y < 0
-        rz_diff = -rz_diff
-      end
+      rz_diff = -rz_diff if diff_x_axis.y < 0
 
       {
         :t   => curr_state["t"],
@@ -144,27 +142,27 @@ class ApplicationController < ActionController::Base
     clip(value, limit) / limit
   end
 
-  ## Serialization ##
-  def serialize_episode (episode)
+  ## Objectify : Decode into Ruby Object ##
+  def objectify_episode (episode)
     {
       :id             => episode.id,
       :name           => episode.name,
       :timestep       => episode.timestep,
-      :states         => JSON.parse(episode.states),
-      :diff_states    => JSON.parse(episode.diff_states),
-      :commands       => JSON.parse(episode.commands),
-      :simulator_logs => JSON.parse(episode.simulator_logs),
+      :states         => objectify_json(episode.states),
+      :diff_states    => objectify_json(episode.diff_states),
+      :commands       => objectify_json(episode.commands),
+      :simulator_logs => objectify_json(episode.simulator_logs),
       :created_at     => episode.created_at,
       :updated_at     => episode.updated_at,
     }
   end
 
-  def serialize_optimization (optimization)
+  def objectify_optimization (optimization)
     {
-      :episode                  => serialize_episode(optimization.episode),
-      :states_list              => JSON.parse(optimization.states_list),
-      :commands_list            => JSON.parse(optimization.commands_list),
-      :simulator_log_list       => JSON.parse(optimization.simulator_log_list),
+      :episode                  => objectify_episode(optimization.episode),
+      :states_list              => objectify_json(optimization.states_list),
+      :commands_list            => objectify_json(optimization.commands_list),
+      :simulator_log_list       => objectify_json(optimization.simulator_log_list),
       :max_iteration_count      => optimization.max_iteration_count,
       :current_iteration_index  => optimization.current_iteration_index,
       :created_at               => optimization.created_at,
@@ -172,15 +170,19 @@ class ApplicationController < ActionController::Base
     }
   end
 
-  def serialize_optimization_feedback(optimization)
+  def objectify_optimization_to_feedback_form(optimization)
     current, max = optimization.current_iteration_index, optimization.max_iteration_count
     {
       :id => optimization.id,
       :current_iteration_index => current,
       :timestep => optimization.episode.timestep,
-      :commands => current >= max ? [] : JSON.parse(optimization.commands_list)[current], # Empty Commands considered as termination
+      :commands => current >= max ? [] : objectify_json(optimization.commands_list)[current], # Empty Commands considered as termination
       :success => true, # TODO : implement this
       :error_message => "Error Message!!" # TODO : implement this
     }
+  end
+
+  def objectify_json(json_string)
+    JSON.parse(json_string) #, object_class: OpenStruct)
   end
 end

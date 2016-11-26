@@ -4,19 +4,19 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @optimizations.map{|optimization| serialize_optimization(optimization)} }
+      format.json { render json: @optimizations.map{|optimization| objectify_optimization(optimization)} }
     end
   end
 
   def show
     @optimization = TrajectoryOptimization.find(params[:id])
-    @optimization.simulator_log_list = JSON.parse(@optimization.simulator_log_list).map do |states|
+    @optimization.simulator_log_list = objectify_json(@optimization.simulator_log_list).map do |states|
       refine_states(states)
     end.to_json
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: serialize_optimization(@optimization) }
+      format.json { render json: objectify_optimization(@optimization) }
     end
   end
 
@@ -37,7 +37,7 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
       if @optimization.save
         flash[:notice] = 'optimization was successfully duplicated.'
         format.html { redirect_to(@optimization) }
-        format.json { render json: serialize_optimization(@optimization), status: :created, location: @optimization }
+        format.json { render json: objectify_optimization(@optimization), status: :created, location: @optimization }
       else
         format.html { redirect_to :back }
         format.json { render json: @optimization.errors, status: :unprocessable_entity }
@@ -49,12 +49,12 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
     @optimization = TrajectoryOptimization.find(params[:id])
     @iteration_id = params[:iteration_id].to_i
 
-    @refined_reference = refine_states(JSON.parse(@optimization.episode.states)).to_json
-    @refined_response  = refine_states(JSON.parse(@optimization.simulator_log_list)[@iteration_id]).to_json
+    @refined_reference = refine_states(objectify_json(@optimization.episode.states)).to_json
+    @refined_response  = refine_states(objectify_json(@optimization.simulator_log_list)[@iteration_id]).to_json
 
     respond_to do |format|
       format.html # iteration_show.html.erb
-      format.json { render json: serialize_optimization(@optimization) }
+      format.json { render json: objectify_optimization(@optimization) }
     end
   end
 
@@ -62,9 +62,9 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
     @optimization = TrajectoryOptimization.find(params[:id])
     @iteration_id = params[:iteration_id].to_i
 
-    @refined_reference = refine_states(JSON.parse(@optimization.episode.states)).to_json
-    @refined_response  = refine_states(JSON.parse(@optimization.simulator_log_list)[@iteration_id]).to_json
-    @differences = differences_between(JSON.parse(@refined_reference), JSON.parse(@refined_response)).map do |difference|
+    @refined_reference = refine_states(objectify_json(@optimization.episode.states)).to_json
+    @refined_response  = refine_states(objectify_json(@optimization.simulator_log_list)[@iteration_id]).to_json
+    @differences = differences_between(objectify_json(@refined_reference), objectify_json(@refined_response)).map do |difference|
       rx, ry, rz = matrix_to_euler(difference[:rotation])
       {
         :t => difference[:t],
@@ -79,7 +79,7 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
 
     respond_to do |format|
       format.html # iteration_render3d.html.erb
-      format.json { render json: serialize_optimization(@optimization) }
+      format.json { render json: objectify_optimization(@optimization) }
     end
   end
 end

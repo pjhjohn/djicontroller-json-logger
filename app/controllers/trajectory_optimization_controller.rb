@@ -12,15 +12,15 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization.episode_id = @episode.id
 
     # Initialization of TrajectoryOptimization Environments
-    @optimization.states_list = [JSON.parse(@episode.states)].to_json
-    @optimization.commands_list = [JSON.parse(@episode.commands)].to_json
+    @optimization.states_list = [objectify_json(@episode.states)].to_json
+    @optimization.commands_list = [objectify_json(@episode.commands)].to_json
     @optimization.max_iteration_count = params[:max_iteration_count] unless params[:max_iteration_count].nil?
 
     # Save
     @optimization.save
 
     # Construct Feedback Object & Return with JSON format
-    render :json => serialize_optimization_feedback(@optimization)
+    render :json => objectify_optimization_to_feedback_form(@optimization)
   end
 
   # params[:id] is TrajectoryOptimization ID
@@ -29,15 +29,15 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization = TrajectoryOptimization.find(params[:id])
 
     # Push to update simulator_log_list from client
-    @optimization.simulator_log_list = JSON.parse(@optimization.simulator_log_list).push(params[:events]).to_json
+    @optimization.simulator_log_list = objectify_json(@optimization.simulator_log_list).push(params[:events]).to_json
 
     # Instantiate data for current iteration
     timestep            = @optimization.episode.timestep
     current             = @optimization.current_iteration_index
     max                 = @optimization.max_iteration_count
-    states_list         = JSON.parse(@optimization.states_list)
-    commands_list       = JSON.parse(@optimization.commands_list)
-    simulator_log_list  = JSON.parse(@optimization.simulator_log_list)
+    states_list         = objectify_json(@optimization.states_list)
+    commands_list       = objectify_json(@optimization.commands_list)
+    simulator_log_list  = objectify_json(@optimization.simulator_log_list)
 
     # Calculate difference factor from current states & simulator_log
     differences = differences_between states_list[current], simulator_log_list[current]
@@ -55,7 +55,7 @@ class TrajectoryOptimizationController < ApplicationController
     @optimization.save
 
     # Construct Feedback Object & Return with JSON format
-    render :json => serialize_optimization_feedback(@optimization)
+    render :json => objectify_optimization_to_feedback_form(@optimization)
   end
 
   # Difference from reference state to simulator state
