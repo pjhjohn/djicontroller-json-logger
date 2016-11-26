@@ -10,6 +10,9 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
 
   def show
     @optimization = TrajectoryOptimization.find(params[:id])
+    @optimization.simulator_log_list = JSON.parse(@optimization.simulator_log_list).map do |states|
+      refine_states(states)
+    end.to_json
 
     respond_to do |format|
       format.html # show.html.erb
