@@ -66,7 +66,7 @@ class EpisodesController < ApplicationController
       end
     end
   end
-  
+
   def show
     @episode = Episode.find(params[:id])
 
@@ -75,11 +75,11 @@ class EpisodesController < ApplicationController
       format.json { render json: serialize_episode(@episode) }
     end
   end
-  
+
   def edit
     @episode = Episode.find(params[:id])
   end
-  
+
   def update
     @episode = Episode.find(params[:id])
 
@@ -105,7 +105,7 @@ class EpisodesController < ApplicationController
   def destroy
     @episode = Episode.find(params[:id])
     @episode.destroy
-  
+
     respond_to do |format|
       format.html { redirect_to(episodes_url) }
       format.json { head :ok }

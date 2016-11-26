@@ -2,6 +2,11 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   # protect_from_forgery with: :exception
+  @@const = {
+    :position => 1.0, # Constant for scaling position difference
+    :rotation => 1.0, # Constant for scaling rotation difference
+    :relative => 0.5, # Blending position & rotation scores in [0, 1]. 1 for position-only, 0 for rotation-only
+  }
 
   ## Alias functions for episode data update ##
   def states_to_commands(states, timestep)

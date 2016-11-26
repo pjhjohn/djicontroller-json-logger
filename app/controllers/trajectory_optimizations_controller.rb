@@ -64,6 +64,18 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
 
     @refined_reference = refine_states(JSON.parse(@optimization.episode.states)).to_json
     @refined_response  = refine_states(JSON.parse(@optimization.simulator_log_list)[@iteration_id]).to_json
+    @differences = differences_between(JSON.parse(@refined_reference), JSON.parse(@refined_response)).map do |difference|
+      rx, ry, rz = matrix_to_euler(difference[:rotation])
+      {
+        :t => difference[:t],
+        :x => difference[:position].x,
+        :y => difference[:position].y,
+        :z => difference[:position].z,
+        :rx => rx,
+        :ry => ry,
+        :rz => rz,
+      }
+    end.to_json
 
     respond_to do |format|
       format.html # iteration_render3d.html.erb

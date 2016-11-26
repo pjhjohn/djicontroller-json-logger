@@ -40,9 +40,10 @@ class TrajectoryOptimizationController < ApplicationController
     simulator_log_list  = JSON.parse(@optimization.simulator_log_list)
 
     # Calculate difference factor from current states & simulator_log
-    distances = get_distances(states_list[current], simulator_log_list[current])
+    differences = differences_between states_list[current], simulator_log_list[current]
 
     # Calculate update difference of current states
+
     delta_states = get_delta_states_to_update(states_list[current], distances)
 
     # Next Iteration : update states & commands
@@ -57,6 +58,46 @@ class TrajectoryOptimizationController < ApplicationController
     render :json => serialize_optimization_feedback(@optimization)
   end
 
+  # Difference from reference state to simulator state
+  def difference_between(ref_state, sim_state)
+    ref_position, ref_rotation = state_to_position_and_rotation(ref_state)
+    sim_position, sim_rotation = state_to_position_and_rotation(sim_state)
+    {
+      :t => ref_state["t"],
+      :position => sim_position - ref_position,
+      :rotation => ref_rotation.inverse * sim_rotation,
+    }
+  end
+
+  def differences_between(ref_states, sim_states)
+    # TODO : sim_states.length => ref_states.length
+    (0...sim_states.length).map do |i|
+      difference_between ref_states[i], sim_states[i]
+    end
+  end
+
+  # Distance as score blending position & rotation SQUARED difference factors
+  def difference_to_distance(difference)
+    @@const.mixratio * @@const.position * difference.position.length_squared +                                  # ||dP||^2
+    (1 - @@const.mixratio) * @@const.rotation * (Geo3d::Quaternion.from_matrix(difference.rotation).angle ** 2) # ||dR||^2 angle in radians
+  end
+
+  # RMS (S from difference_to_distance)
+  def error_score(ref_states, sim_states)
+    score = 0
+    differences_between(ref_states, sim_states).each { |difference| score += difference_to_distance(distance) }
+    Math.sqrt(score / ref_states.length)
+  end
+
+  def get_delta_states_to_update(states, distances)
+    nil # TODO : implement this
+  end
+
+  def update_states(states, delta_states)
+    states # TODO : implement this
+  end
+
+  # States Refinements
   def refine_states(states)
     bias_pos, _ = state_to_position_and_rotation(states[0])
     bias_mat = Geo3d::Matrix.rotation_z states[0]["rz"].degrees
@@ -77,30 +118,5 @@ class TrajectoryOptimizationController < ApplicationController
         :refined_mat => refined_mat,
       }
     end
-  end
-
-  def get_distance(state1, state2)
-    0 # TODO : implement this
-  end
-
-  def get_distances(states, simulator_log)
-    # Assume states & simulator_log have same length & aligned
-    (1..states.length).map do |i|
-      get_distance(states[i], simulator_log[i])
-    end
-  end
-
-  def error_score(states, simulator_log)
-    score = 0
-    get_distances(states, simulator_log).each { |distance| score += distance }
-    score
-  end
-
-  def get_delta_states_to_update(states, distances)
-    nil # TODO : implement this
-  end
-
-  def update_states(states, delta_states)
-    states # TODO : implement this
   end
 end
