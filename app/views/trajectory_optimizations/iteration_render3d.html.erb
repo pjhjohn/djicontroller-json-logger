@@ -2,7 +2,7 @@
 <div style="position:absolute;left:5px;top:5px;">
   <a href="/" class="btn btn-light">Home</a>
   <a href="/episodes/<%= @optimization.episode.id %>" class="btn btn-light">Episode</a>
-  <a href="/trajectory_optimizations/<%= @optimization.id %>" class="btn btn-light">Trajectory Optimization</a>
+  <a href="/trajectory_optimizations/<%= @optimization.id %>/<%= @iteration_id %>" class="btn btn-light">Trajectory Optimization</a>
   <% (0...@optimization.max_iteration_count).map do |i| %>
     <a href="/trajectory_optimizations/<%= @optimization.id %>/<%= i %>/render" class="btn btn-light">#<%= i %></a>
   <% end %>
