@@ -49,8 +49,20 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
     @optimization = TrajectoryOptimization.find(params[:id])
     @iteration_id = params[:iteration_id].to_i
 
-    @refined_ref_states = refine_states(objectify_json(@optimization.episode.states)).to_json
-    @refined_sim_states = refine_states(objectify_json(@optimization.simulator_log_list)[@iteration_id]).to_json
+    refined_ref_states = refine_states(objectify_json(@optimization.episode.states))
+    refined_iter_states = refine_states(objectify_json(@optimization.states_list)[@iteration_id])
+    refined_sim_states = refine_states(objectify_json(@optimization.simulator_log_list)[@iteration_id])
+    differences = differences_between(refined_ref_states, refined_sim_states)
+    updated_iter_states = refine_states(update_states(objectify_json(@optimization.states_list)[@iteration_id], differences))
+
+    @chart_data = [
+      refined_ref_states,
+      refined_iter_states,
+      refined_sim_states,
+      differences,
+      updated_iter_states,
+    ].to_json
+    @code_data = @chart_data
 
     respond_to do |format|
       format.html # iteration_show.html.erb
