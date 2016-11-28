@@ -67,8 +67,7 @@ class TrajectoryOptimizationController < ApplicationController
   end
 
   def differences_between(ref_states, sim_states)
-    # TODO : sim_states.length => ref_states.length
-    (0...sim_states.length).map do |i|
+    (0...ref_states.length).map do |i|
       difference = difference_between ref_states[i], sim_states[i]
       state_from_position_and_rotation difference[:t], difference[:position], difference[:rotation]
     end
