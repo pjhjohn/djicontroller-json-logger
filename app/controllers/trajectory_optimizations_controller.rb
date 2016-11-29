@@ -10,6 +10,7 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
 
   def show
     @optimization = TrajectoryOptimization.find(params[:id])
+    @optimization_config = OpenStruct.new(JSON.parse(@optimization.config))
     @optimization.simulator_log_list = objectify_json(@optimization.simulator_log_list).map do |states|
       refine_states(states)
     end.to_json
@@ -42,7 +43,7 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
 
   def duplicate
     @optimization = TrajectoryOptimization.find(params[:id]).dup
-
+    @optimization_config = OpenStruct.new(JSON.parse(@optimization.config))
     respond_to do |format|
       if @optimization.save
         flash[:notice] = 'optimization was successfully duplicated.'
@@ -57,6 +58,7 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
 
   def iteration_show
     @optimization = TrajectoryOptimization.find(params[:id])
+    @optimization_config = OpenStruct.new(JSON.parse(@optimization.config))
     @iteration_id = params[:iteration_id].to_i
 
     refined_ref_states = refine_states(objectify_json(@optimization.episode.states))
@@ -92,6 +94,7 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
 
   def iteration_render3d
     @optimization = TrajectoryOptimization.find(params[:id])
+    @optimization_config = OpenStruct.new(JSON.parse(@optimization.config))
     @iteration_id = params[:iteration_id].to_i
 
     @refined_ref_states = refine_states(objectify_json(@optimization.episode.states)).to_json

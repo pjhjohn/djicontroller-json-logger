@@ -10,6 +10,12 @@ class TrajectoryOptimizationController < ApplicationController
     # Instantiate TrajectoryOptimization
     @optimization = TrajectoryOptimization.new
     @optimization.episode_id = @episode.id
+    @optimization.config = {
+      :position => @@const.position,
+      :rotation => @@const.rotation,
+      :mixratio => @@const.mixratio,
+      :update_damp => @@const.update_damp,
+    }.to_json
 
     # Initialization of TrajectoryOptimization Environments
     @optimization.states_list = [objectify_json(@episode.states)].to_json
@@ -27,6 +33,7 @@ class TrajectoryOptimizationController < ApplicationController
   def continue
     # Retrieve Target TrajectoryOptimization
     @optimization = TrajectoryOptimization.find(params[:id])
+    @optimization_config = OpenStruct.new(JSON.parse(@optimization.config))
 
     # Push to update simulator_log_list from client
     @optimization.simulator_log_list = objectify_json(@optimization.simulator_log_list).push(params[:events]).to_json
@@ -84,8 +91,8 @@ class TrajectoryOptimizationController < ApplicationController
 
   def difference_to_distance(difference)
     diff_position, diff_rotation = state_to_position_and_rotation(difference)
-    @@const.mixratio * @@const.position * raw_distance_of_difference_position(diff_position) +     # ||dP||^2
-    (1 - @@const.mixratio) * @@const.rotation * raw_distance_of_difference_rotation(diff_rotation) # ||dR||^2 angle in radians
+    @optimization_config.mixratio * @optimization_config.position * raw_distance_of_difference_position(diff_position) +     # ||dP||^2
+    (1 - @optimization_config.mixratio) * @optimization_config.rotation * raw_distance_of_difference_rotation(diff_rotation) # ||dR||^2 angle in radians
   end
 
   # RMS (S from difference_to_distance)
@@ -100,8 +107,8 @@ class TrajectoryOptimizationController < ApplicationController
     iter_state_quaternion = matrix_to_quaternion(iter_state_rot)
     difference_quaternion = matrix_to_quaternion(difference_rot)
 
-    updated_pos = iter_state_pos + difference_pos * @@const.update_damp
-    updated_rot = (iter_state_quaternion + difference_quaternion * @@const.update_damp).to_matrix
+    updated_pos = iter_state_pos + difference_pos * @optimization_config.update_damp
+    updated_rot = (iter_state_quaternion + difference_quaternion * @optimization_config.update_damp).to_matrix
 
     state_from_position_and_rotation iter_state["t"], updated_pos, updated_rot
   end

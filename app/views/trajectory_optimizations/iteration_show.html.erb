@@ -20,6 +20,10 @@
   <div class="column col-12" style="padding:15px;">
     <div>Time interval between drone commands : <strong><%= @optimization.episode.timestep %>ms</strong></div>
     <div>Max Iteration Count : <strong><%= @optimization.max_iteration_count %></strong></div>
+    <div>Position Coefficient : <strong><%= @optimization_config.position %></strong></div>
+    <div>Rotation Coefficient : <strong><%= @optimization_config.rotation %></strong></div>
+    <div>Mix Ratio Coefficient : <strong><%= @optimization_config.mixratio %></strong></div>
+    <div>Update Damp Coefficient : <strong><%= @optimization_config.update_damp %></strong></div>
     <div>Average Error Score : <strong><%= @error_score %></strong></div>
   </div>
 </div>

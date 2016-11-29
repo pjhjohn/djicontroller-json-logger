@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20161109131827) do
     t.string   "simulator_log_list",      default: "[]"
     t.integer  "max_iteration_count",     default: 10
     t.integer  "current_iteration_index", default: 0
+    t.string   "config",                  default: "{}"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
   end
