@@ -39,14 +39,23 @@
       },
       options: {
         scales: {
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Time [ms]',
+            },
+            ticks: {
+              beginAtZero:true,
+            },
+          }],
           yAxes: [{
             id: 'position',
             type: 'linear',
             position: 'left',
             scaleLabel: {
               display: true,
-              labelString: 'Position : x, y, z in [m]      Velocity : dx, dy, dz in [m/s]'
-            }
+              labelString: ['Position : x, y, z in [m]', 'Velocity : dx, dy, dz in [m/s]'][+(["dx", "dy", "dz", "drz"].reduce((exist, key) => { return exist || keys.indexOf(key) > -1 }, false))],
+            },
           },
           {
             id: 'rotation',
@@ -54,14 +63,14 @@
             position: 'right',
             scaleLabel: {
               display: true,
-              labelString: 'Rotation Angle : rx, ry, rz in [degree]      Rotation Angular Velocity : drz in [degree/s]'
-            }
-          }]
+              labelString: ['Rotation Angle : rx, ry, rz in [degree]', 'Rotation Angular Velocity : drz in [degree/s]'][+(["dx", "dy", "dz", "drz"].reduce((exist, key) => { return exist || keys.indexOf(key) > -1 }, false))],
+            },
+          }],
         },
         legend: {
-          display: displayLegend
-        }
-      }
+          display: displayLegend,
+        },
+      },
     });
     document.querySelector('#<%= title %>_chart_header').addEventListener('click', (event) => {
       <%= title %>Chart.config.options.legend.display = displayLegend = !displayLegend;

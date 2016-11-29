@@ -13,6 +13,16 @@
     // noinspection JSAnnotator
     const domain = "<%= domain %>";
     const keys = { t: ["position", "rotation", "total"], iteration: ["error_score"] };
+    const labelString = {
+      t: {
+        x: 'Time',
+        y: 'TotalScore Root Mean Weighted Squared Sum',
+      },
+      iteration: {
+        x: 'Number of Iteration',
+        y: 'Position : length^2     Rotation : angle^2',
+      },
+    };
     let displayLegend = true;
     const labels = { position: "Position Distance",  rotation: "Rotation Distance",  total: "Total Distance", error_score: "Error Score" };
     const colors = { position: "#FF7777", rotation: "#7777FF", total: "#BB70FF", error_score: "#000000" };
@@ -33,19 +43,32 @@
       },
       options: {
         scales: {
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: labelString[domain].x,
+            },
+            ticks: {
+              beginAtZero:true,
+            },
+          }],
           yAxes: [{
-            type: 'linear',
+            type: 'logarithmic',
             position: 'left',
             scaleLabel: {
               display: true,
-              labelString: 'Position : length^2     Rotation : angle^2     TotalScore : RMS'
-            }
-          }]
+              labelString: labelString[domain].y,
+            },
+            ticks: {
+              min: Math.pow(10, -2),
+              max: Math.pow(10, 1),
+            },
+          }],
         },
         legend: {
-          display: displayLegend
-        }
-      }
+          display: displayLegend,
+        },
+      },
     });
     document.querySelector('#<%= title %>_chart_header').addEventListener('click', (event) => {
       <%= title %>Chart.config.options.legend.display = displayLegend = !displayLegend;
