@@ -12,15 +12,15 @@
     const data = <%= raw data %>;
     // noinspection JSAnnotator
     const domain = "<%= domain %>";
-    const keys = ["position", "rotation", "total"];
+    const keys = { t: ["position", "rotation", "total"], iteration: ["error_score"] };
     let displayLegend = true;
-    const labels = { position: "Position Distance",  rotation: "Rotation Distance",  total: "Total Distance" };
-    const colors = { position: "#FF7777", rotation: "#7777FF", total: "#BB70FF" };
+    const labels = { position: "Position Distance",  rotation: "Rotation Distance",  total: "Total Distance", error_score: "Error Score" };
+    const colors = { position: "#FF7777", rotation: "#7777FF", total: "#BB70FF", error_score: "#000000" };
     const <%= title %>Chart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: listByKey(domain),
-        datasets: keys.map(key => ({
+        datasets: keys[domain].map(key => ({
           label: labels[key],
           fill: false,
           borderColor: colors[key],

@@ -14,6 +14,16 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
       refine_states(states)
     end.to_json
 
+    refined_ref_states = refine_states(objectify_json(@optimization.episode.states))
+    @error_scores = (0...@optimization.max_iteration_count).map do |iteration_id|
+      refined_sim_states = refine_states(objectify_json(@optimization.simulator_log_list)[iteration_id])
+      differences = differences_between(refined_ref_states, refined_sim_states)
+      {
+        :iteration => iteration_id,
+        :error_score => error_score(differences)
+      }
+    end.to_json
+
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: objectify_optimization(@optimization) }

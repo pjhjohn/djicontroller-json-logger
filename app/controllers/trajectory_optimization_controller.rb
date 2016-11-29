@@ -77,9 +77,11 @@ class TrajectoryOptimizationController < ApplicationController
   def raw_distance_of_difference_position(position_diff)
     position_diff.length_squared
   end
+
   def raw_distance_of_difference_rotation(rotation_diff)
     (matrix_to_quaternion(rotation_diff).angle ** 2)
   end
+
   def difference_to_distance(difference)
     diff_position, diff_rotation = state_to_position_and_rotation(difference)
     @@const.mixratio * @@const.position * raw_distance_of_difference_position(diff_position) +     # ||dP||^2

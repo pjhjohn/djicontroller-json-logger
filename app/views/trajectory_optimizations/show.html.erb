@@ -63,6 +63,16 @@
     <pre id="simulator_log_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@optimization.simulator_log_list, nil, true) -%></pre>
   </div>
 </div>
+<div class="divider"></div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;padding-bottom:0px;">
+    <h4><a id="error_score" href="#error_score" style="text-decoration:none;">Error Score per iteration</a></h4>
+    <span>RMS Error Score of the entire iteration</span>
+    <%= render partial: "layouts/chart_score", locals: { title: "error_score", data: json_stringify(@error_scores), domain: "iteration" } %>
+    <h6 data-id="error_score_code" class="copy">Raw Data</h6>
+    <pre id="error_score_code" class="code lang-js" style="height:84px;"><%= json_stringify(@error_scores, nil, true) -%></pre>
+  </div>
+</div>
 <script type="text/javascript">
   const codeBlocks = document.getElementsByTagName("pre");
   for (let i = 0; i < codeBlocks.length; i++) {
