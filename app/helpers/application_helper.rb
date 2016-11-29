@@ -1,6 +1,10 @@
 module ApplicationHelper
   def json_stringify(json_string, at=nil, pretty=false)
-    json_obj = JSON.parse(json_string)
+    begin
+      json_obj = JSON.parse(json_string)
+    rescue Exception => e
+      raise "Error while parsing JSON string : #{e.message}, string : #{json_string}"
+    end
     unless at.nil?
       json_obj = json_obj[at]
     end
