@@ -67,24 +67,30 @@ class TrajectoryOptimizationController < ApplicationController
   end
 
   def differences_between(ref_states, sim_states)
-    # TODO : sim_states.length => ref_states.length
-    (0...sim_states.length).map do |i|
+    (0...ref_states.length).map do |i|
       difference = difference_between ref_states[i], sim_states[i]
       state_from_position_and_rotation difference[:t], difference[:position], difference[:rotation]
     end
   end
 
   # Distance as score blending position & rotation SQUARED difference factors
+  def raw_distance_of_difference_position(position_diff)
+    position_diff.length_squared
+  end
+
+  def raw_distance_of_difference_rotation(rotation_diff)
+    (matrix_to_quaternion(rotation_diff).angle ** 2)
+  end
+
   def difference_to_distance(difference)
-    @@const.mixratio * @@const.position * difference.position.length_squared +                                  # ||dP||^2
-    (1 - @@const.mixratio) * @@const.rotation * (matrix_to_quaternion(difference.rotation).angle ** 2) # ||dR||^2 angle in radians
+    diff_position, diff_rotation = state_to_position_and_rotation(difference)
+    @@const.mixratio * @@const.position * raw_distance_of_difference_position(diff_position) +     # ||dP||^2
+    (1 - @@const.mixratio) * @@const.rotation * raw_distance_of_difference_rotation(diff_rotation) # ||dR||^2 angle in radians
   end
 
   # RMS (S from difference_to_distance)
-  def error_score(ref_states, sim_states)
-    score = 0
-    differences_between(ref_states, sim_states).each { |difference| score += difference_to_distance(distance) }
-    Math.sqrt(score / ref_states.length)
+  def error_score(differences)
+    Math.sqrt(differences.inject(0){ |sum, difference| sum + difference_to_distance(difference) } / differences.length)
   end
 
   def update_state(iter_state, difference)

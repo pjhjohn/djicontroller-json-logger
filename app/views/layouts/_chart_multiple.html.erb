@@ -14,16 +14,12 @@
     const listByKey = (datum, key) => datum.map(obj => obj[key]);
     let displayLegend = false;
     const labels = {
-      x :  "x",  y:  "y",  z:  "z",
-      rx: "rx", ry: "ry", rz: "rz",
-      dx: "dx", dy: "dy", dz: "dz",
-      drz: "drz",
+       x:  "x",  y:  "y",  z:  "z",  rx:  "rx",  ry:  "ry",  rz:  "rz",
+      dx: "dx", dy: "dy", dz: "dz", drx: "drx", dry: "dry", drz: "drz",
     };
     const colors = {
-      x:  "rgb(255, 127, 127)", y:  "rgb(127, 255, 127)", z:  "rgb(127, 127, 255)",
-      rx: "rgb(100, 245, 245)", ry: "rgb(245, 100, 245)", rz: "rgb(245, 245, 100)",
-      dx: "rgb(255, 127, 127)", dy: "rgb(127, 255, 127)", dz: "rgb(127, 127, 255)",
-      drz: "rgb(245, 245, 100)", white: "#fff",
+       x: "#FF7777",  y: "#77FF77",  z: "#7777FF",  rx: "#64F5F5",  ry: "#F564F5",  rz: "#F5F564",
+      dx: "#FF7777", dy: "#77FF77", dz: "#7777FF", drx: "#64F5F5", dry: "#F564F5", drz: "#F5F564", white: "#FFFFFF",
     };
     const <%= title %>Chart = new Chart(ctx, {
       type: 'line',

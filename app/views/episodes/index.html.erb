@@ -27,6 +27,7 @@
                 <div><%= JSON.parse(episode.diff_states).length %> diff_states</div>
                 <div><%= JSON.parse(episode.commands).length %> commands</div>
                 <div><%= JSON.parse(episode.simulator_logs).length %> simulator_logs</div>
+                <div><%= episode.trajectory_optimizations.count %> Trajectory Optimizations</div>
                 <div>@ <%= episode.created_at.strftime("%F %T") %></div>
               </div>
             </div>

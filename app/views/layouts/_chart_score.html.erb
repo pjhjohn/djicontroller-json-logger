@@ -8,24 +8,19 @@
   {
     const ctx = document.getElementById('<%= title %>_chart').getContext('2d');
     const listByKey = (key) => data.map(obj => obj[key]);
-    //noinspection JSAnnotator
+    // noinspection JSAnnotator
     const data = <%= raw data %>;
-    //noinspection JSAnnotator
-    const keys = <%= raw keys %>;
+    // noinspection JSAnnotator
+    const domain = "<%= domain %>";
+    const keys = { t: ["position", "rotation", "total"], iteration: ["error_score"] };
     let displayLegend = true;
-    const labels = {
-       x:  "x",  y:  "y",  z:  "z",  rx:  "rx",  ry:  "ry",  rz:  "rz",
-      dx: "dx", dy: "dy", dz: "dz", drx: "drx", dry: "dry", drz: "drz",
-    };
-    const colors = {
-       x: "#FF7777",  y: "#77FF77",  z: "#7777FF",  rx: "#64F5F5",  ry: "#F564F5",  rz: "#F5F564",
-      dx: "#FF7777", dy: "#77FF77", dz: "#7777FF", drx: "#64F5F5", dry: "#F564F5", drz: "#F5F564", white: "#FFFFFF",
-    };
+    const labels = { position: "Position Distance",  rotation: "Rotation Distance",  total: "Total Distance", error_score: "Error Score" };
+    const colors = { position: "#FF7777", rotation: "#7777FF", total: "#BB70FF", error_score: "#000000" };
     const <%= title %>Chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: listByKey("t"),
-        datasets: keys.map(key => ({
+        labels: listByKey(domain),
+        datasets: keys[domain].map(key => ({
           label: labels[key],
           fill: false,
           borderColor: colors[key],
@@ -34,27 +29,16 @@
           pointHoverBackgroundColor: colors[key],
           pointHoverBorderColor: colors.white,
           data: listByKey(key),
-          yAxisID: ['rotation', 'position'][+(["rx", "ry", "rz", "drz"].indexOf(key) == -1)],
         }))
       },
       options: {
         scales: {
           yAxes: [{
-            id: 'position',
             type: 'linear',
             position: 'left',
             scaleLabel: {
               display: true,
-              labelString: 'Position : x, y, z in [m]      Velocity : dx, dy, dz in [m/s]'
-            }
-          },
-          {
-            id: 'rotation',
-            type: 'linear',
-            position: 'right',
-            scaleLabel: {
-              display: true,
-              labelString: 'Rotation Angle : rx, ry, rz in [degree]      Rotation Angular Velocity : drz in [degree/s]'
+              labelString: 'Position : length^2     Rotation : angle^2     TotalScore : RMS'
             }
           }]
         },
