@@ -1,0 +1,56 @@
+<% if data == "null" or JSON.parse(data).empty? %>
+  <h6>Chart</h6>
+  <h2>Empty Data</h2>
+<% else %>
+  <h6 id="<%= title %>_chart_header" class="chart-header">Chart</h6>
+  <canvas id="<%= title %>_chart"></canvas>
+  <script>
+  {
+    const ctx = document.getElementById('<%= title %>_chart').getContext('2d');
+    const listByKey = (key) => data.map(obj => obj[key]);
+    // noinspection JSAnnotator
+    const data = <%= raw data %>;
+    // noinspection JSAnnotator
+    const domain = "<%= domain %>";
+    const keys = ["position", "rotation", "total"];
+    let displayLegend = true;
+    const labels = { position: "Position Distance",  rotation: "Rotation Distance",  total: "Total Distance" };
+    const colors = { position: "rgb(255, 127, 127)", rotation: "rgb(127, 127, 255)", total: "#BB70FF" };
+    const <%= title %>Chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: listByKey(domain),
+        datasets: keys.map(key => ({
+          label: labels[key],
+          fill: false,
+          borderColor: colors[key],
+          pointBorderColor: colors[key],
+          pointBackgroundColor: colors.white,
+          pointHoverBackgroundColor: colors[key],
+          pointHoverBorderColor: colors.white,
+          data: listByKey(key),
+        }))
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            type: 'linear',
+            position: 'left',
+            scaleLabel: {
+              display: true,
+              labelString: 'Position : length^2     Rotation : angle^2     TotalScore : RMS'
+            }
+          }]
+        },
+        legend: {
+          display: displayLegend
+        }
+      }
+    });
+    document.querySelector('#<%= title %>_chart_header').addEventListener('click', (event) => {
+      <%= title %>Chart.config.options.legend.display = displayLegend = !displayLegend;
+      <%= title %>Chart.update();
+    });
+  }
+  </script>
+<% end %>

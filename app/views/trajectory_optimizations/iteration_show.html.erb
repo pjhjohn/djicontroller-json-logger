@@ -20,6 +20,7 @@
   <div class="column col-12" style="padding:15px;">
     <div>Time interval between drone commands : <strong><%= @optimization.episode.timestep %>ms</strong></div>
     <div>Max Iteration Count : <strong><%= @optimization.max_iteration_count %></strong></div>
+    <div>Average Error Score : <strong><%= @error_score %></strong></div>
   </div>
 </div>
 <div class="divider"></div>
@@ -57,6 +58,20 @@
     <%= render partial: "layouts/chart_multiple", locals: { title: "simulator_log", data: @chart_data, keys: ["x", "y", "z", "rx", "ry", "rz"] } %>
     <h6 data-id="simulator_log_list_code" class="copy">Raw Data</h6>
     <pre id="simulator_log_list_code" class="code lang-js" style="height:84px;"><%= json_stringify(@code_data, nil, true) -%></pre>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+  <div class="column col-12" style="padding:15px;padding-bottom:0px;">
+    <h4><a id="distances" href="#distances" style="text-decoration:none;">Distances</a></h4>
+    <span><strong>Constant Coefficients</strong></span><br/>
+    <span>total = r * a * position_distance + (1 - r) * b * rotation_distance</span><br/>
+    <span>a => 1.0, # Constant for scaling position difference</span><br/>
+    <span>b => 1.0, # Constant for scaling rotation difference</span><br/>
+    <span>r => 0.5, # Blending position & rotation scores in [0, 1]. 1 for position-only, 0 for rotation-only</span><br/>
+    <%= render partial: "layouts/chart_score", locals: { title: "distances", data: json_stringify(@distances), domain: "t" } %>
+    <h6 data-id="distances_code" class="copy">Raw Data</h6>
+    <pre id="distances_code" class="code lang-js" style="height:84px;"><%= json_stringify(@distances, nil, true) -%></pre>
   </div>
 </div>
 <script type="text/javascript">

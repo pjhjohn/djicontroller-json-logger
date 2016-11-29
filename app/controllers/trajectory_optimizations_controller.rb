@@ -54,6 +54,7 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
     refined_sim_states = refine_states(objectify_json(@optimization.simulator_log_list)[@iteration_id])
     differences = differences_between(refined_ref_states, refined_sim_states)
     updated_iter_states = refine_states(update_states(objectify_json(@optimization.states_list)[@iteration_id], differences))
+    @error_score = error_score(differences)
 
     @chart_data = [
       refined_ref_states,
@@ -63,6 +64,15 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
       updated_iter_states,
     ].to_json
     @code_data = @chart_data
+    @distances = differences.map do |difference|
+      diff_position, diff_rotation = state_to_position_and_rotation(difference)
+      {
+        :t => difference["t"],
+        :position => raw_distance_of_difference_position(diff_position),
+        :rotation => raw_distance_of_difference_rotation(diff_rotation),
+        :total => difference_to_distance(difference),
+      }
+    end.to_json
 
     respond_to do |format|
       format.html # iteration_show.html.erb
