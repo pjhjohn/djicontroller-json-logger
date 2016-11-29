@@ -51,12 +51,15 @@ class TrajectoryOptimizationController < ApplicationController
 
     differences = differences_between(refined_ref_states, refined_sim_states)
     updated_iter_states = refine_states(update_states(states_list[current], differences))
+    error_score = error_score(differences)
 
-    # Next Iteration : update states & commands
-    @optimization.states_list = states_list.push(updated_iter_states).to_json if current < max - 1
-    @optimization.commands_list = commands_list.push(states_to_commands(updated_iter_states, timestep)).to_json if current < max - 1
-    @optimization.current_iteration_index = current + 1
-    @optimization.save
+    # Next Iteration : update states & commands only if error_score is small enough
+    if error_score < 2.0
+      @optimization.states_list = states_list.push(updated_iter_states).to_json if current < max - 1
+      @optimization.commands_list = commands_list.push(states_to_commands(updated_iter_states, timestep)).to_json if current < max - 1
+      @optimization.current_iteration_index = current + 1
+      @optimization.save
+    end
 
     # Construct Feedback Object & Return with JSON format
     render :json => objectify_optimization_to_feedback_form(@optimization)
