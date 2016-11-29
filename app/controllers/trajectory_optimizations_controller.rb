@@ -19,8 +19,18 @@ class TrajectoryOptimizationsController < TrajectoryOptimizationController
     @error_scores = (0...objectify_json(@optimization.simulator_log_list).length).map do |iteration_id|
       refined_sim_states = refine_states(objectify_json(@optimization.simulator_log_list)[iteration_id])
       differences = differences_between(refined_ref_states, refined_sim_states)
+      diff_position_sum, diff_rotation_sum, total_sum = 0, 0, 0
+      differences.map do |difference|
+        diff_position, diff_rotation = state_to_position_and_rotation(difference)
+        diff_position_sum += raw_distance_of_difference_position(diff_position)
+        diff_rotation_sum += raw_distance_of_difference_rotation(diff_rotation)
+        total_sum += difference_to_distance(difference)
+      end
       {
         :iteration => iteration_id,
+        :position => diff_position_sum / differences.length,
+        :rotation => diff_rotation_sum / differences.length,
+        :total => total_sum / differences.length,
         :error_score => error_score(differences)
       }
     end.to_json

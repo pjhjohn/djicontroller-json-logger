@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   @@const = OpenStruct.new({
     :position => 1.0, # Constant for scaling position difference
     :rotation => 1.0, # Constant for scaling rotation difference
-    :mixratio => 0.5, # Blending position & rotation scores in [0, 1]. 1 for position-only, 0 for rotation-only
+    :mixratio => 0.8, # Blending position & rotation scores in [0, 1]. 1 for position-only, 0 for rotation-only
     :update_damp => 0.1, # Updating Damping factor in [0, 1]. 0 for not update, 1 for applying entire difference
   })
 
