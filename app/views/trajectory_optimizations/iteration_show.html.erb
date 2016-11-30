@@ -1,4 +1,18 @@
-<%= render partial: "layouts/title", locals: { id: @optimization.id, title: @optimization.episode.name } %>
+<div class="columns">
+  <div class="column col-7" style="padding:15px;">
+    <h3>
+      <%= @optimization.id %>. <%= @optimization.episode.name %>
+    </h3>
+  </div>
+  <div class="column col-5" style="margin-top:30px;padding:15px;">
+    <form action="/episodes" method="POST">
+      <input type="hidden" name="name" value="<%= "#{@optimization.episode.name}_opt##{@optimization.id}_iter##{@iteration_id}" %>"/>
+      <input type="hidden" name="timestep" value="<%= @optimization.episode.timestep %>"/>
+      <input type="hidden" name="states" value="<%= json_stringify(@optimization.states_list, @iteration_id) %>"/>
+      <button class="btn btn-block" type="submit">New Episode with states_list[<%= @iteration_id %>]</button>
+    </form>
+  </div>
+</div>
 <div class="columns">
   <div class="column col-5" style="padding:15px;padding-bottom:0px;">
     <h4><a id="inspect" href="#inspect" style="text-decoration:none;">Brief Inspection</a></h4>
